@@ -9,6 +9,18 @@ export const addGear = async (req, res) => {
     const gear = JSON.parse(req.body.gearData);
     const imageFile = req.file;
 
+    // Validation
+    if (!gear.name || !gear.category || !gear.pricePerDay) {
+      return res.json({success: false, message: "Missing required gear details"});
+    }
+    
+    if (!imageFile) {
+      return res.json({success: false, message: "Gear image is required"});
+    }
+    
+    if (gear.pricePerDay <= 0) {
+      return res.json({success: false, message: "Price per day must be greater than 0"});
+    }
     const fileBuffer = fs.readFileSync(imageFile.path);
     const response = await imagekit.upload({
       file: fileBuffer,
@@ -75,13 +87,24 @@ export const getGearById = async (req, res) => {
 // ✅ Toggle Gear Availability
 export const toggleGearAvailability = async (req, res) => {
   try {
+    const { _id } = req.user;
     const { gearId } = req.body;
+    
+    if (!gearId) {
+      return res.json({ success: false, message: "Gear ID is required" });
+    }
+    
     const gear = await GearModel.findById(gearId);
     if (!gear) {
       return res.json({ success: false, message: "Gear not found" });
     }
 
+    // Check ownership
+    if (gear.owner.toString() !== _id.toString()) {
+      return res.json({ success: false, message: "Unauthorized" });
+    }
     gear.isAvailable = !gear.isAvailable;
+    gear.isAvaliable = gear.isAvailable; // Keep backward compatibility
     await gear.save();
 
     res.json({ success: true, message: "Availability toggled" });
@@ -93,11 +116,24 @@ export const toggleGearAvailability = async (req, res) => {
 // ✅ Delete Gear
 export const deleteGear = async (req, res) => {
   try {
+    const { _id } = req.user;
     const { gearId } = req.body;
-    const deleted = await GearModel.findByIdAndDelete(gearId);
-    if (!deleted) {
-      return res.json({ success: false, message: "Gear not found or already deleted" });
+    
+    if (!gearId) {
+      return res.json({ success: false, message: "Gear ID is required" });
     }
+    
+    const gear = await GearModel.findById(gearId);
+    if (!gear) {
+      return res.json({ success: false, message: "Gear not found" });
+    }
+
+    // Check ownership
+    if (gear.owner.toString() !== _id.toString()) {
+      return res.json({ success: false, message: "Unauthorized" });
+    }
+    
+    await GearModel.findByIdAndDelete(gearId);
     res.json({ success: true, message: "Gear deleted" });
   } catch (error) {
     res.json({ success: false, message: error.message });

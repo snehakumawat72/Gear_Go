@@ -20,6 +20,7 @@ const CarDetails = () => {
 
   const navigate = useNavigate()
   const [car, setCar] = useState(null)
+  const [loading, setLoading] = useState(false)
   const currency = import.meta.env.VITE_CURRENCY || "₹"
 
   // Calculate number of days
@@ -29,14 +30,22 @@ const CarDetails = () => {
 
 const handleSubmit = async (e) => {
   e.preventDefault();
+  
+  if (loading) return;
+  
   console.log("🚗 Submitting car booking");
 
+  // Validation
   if (new Date(returnDate) <= new Date(pickupDate)) {
     console.log("❌ Invalid dates:", { pickupDate, returnDate });
     toast.error("Return date must be after pickup date");
     return;
   }
 
+  if (!pickupDate || !returnDate) {
+    toast.error("Please select pickup and return dates");
+    return;
+  }
   if (!user?.name || !user?.email || !user?.phone) {
     console.log("❌ Incomplete user profile:", user);
     toast.error("Please complete your profile (name, email, phone) before booking.");
@@ -59,6 +68,8 @@ const handleSubmit = async (e) => {
 
   console.log("✅ All validations passed. Creating Razorpay order for ₹", totalAmount);
 
+  setLoading(true);
+  
   try {
     const { data: orderData } = await axios.post("/api/payment/create-order", {
       amount: totalAmount,
@@ -119,6 +130,7 @@ const handleSubmit = async (e) => {
      modal: {
        ondismiss: function() {
          console.log("Payment modal closed");
+         setLoading(false);
        }
      }
     };
@@ -128,6 +140,8 @@ const handleSubmit = async (e) => {
   } catch (error) {
     console.error("❌ Razorpay order creation failed:", error.message);
     toast.error("Something went wrong during payment initiation.");
+  } finally {
+    setLoading(false);
   }
 };
 
@@ -260,7 +274,7 @@ const handleSubmit = async (e) => {
           </div>
 
           <button className='w-full bg-primary hover:bg-primary-dull transition-all py-3 font-medium text-white rounded-xl cursor-pointer'>
-            Book Now
+            {loading ? "Processing..." : "Book Now"}
           </button>
 
           {pickupDate && returnDate && noOfDays > 0 && (

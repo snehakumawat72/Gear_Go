@@ -1,6 +1,7 @@
 import imagekit from "../configs/imageKit.js";
 import Booking from "../models/Booking.js";
 import Car from "../models/Car.js";
+import GearModel from "../models/GearModel.js";
 import User from "../models/User.js";
 import fs from "fs";
 
@@ -25,6 +26,18 @@ export const addCar = async (req, res)=>{
         let car = JSON.parse(req.body.carData);
         const imageFile = req.file;
 
+        // Validation
+        if (!car.brand || !car.model || !car.year || !car.pricePerDay) {
+            return res.json({success: false, message: "Missing required car details"});
+        }
+        
+        if (!imageFile) {
+            return res.json({success: false, message: "Car image is required"});
+        }
+        
+        if (car.pricePerDay <= 0) {
+            return res.json({success: false, message: "Price per day must be greater than 0"});
+        }
         // Upload Image to ImageKit
         const fileBuffer = fs.readFileSync(imageFile.path)
         const response = await imagekit.upload({
@@ -71,14 +84,23 @@ export const toggleCarAvailability = async (req, res) =>{
     try {
         const {_id} = req.user;
         const {carId} = req.body
+        
+        if (!carId) {
+            return res.json({ success: false, message: "Car ID is required" });
+        }
+        
         const car = await Car.findById(carId)
 
+        if (!car) {
+            return res.json({ success: false, message: "Car not found" });
+        }
         // Checking is car belongs to the user
         if(car.owner.toString() !== _id.toString()){
             return res.json({ success: false, message: "Unauthorized" });
         }
 
         car.isAvailable = !car.isAvailable;
+        car.isAvaliable = car.isAvailable; // Keep backward compatibility
         await car.save()
 
         res.json({success: true, message: "Availability Toggled"})
@@ -93,17 +115,22 @@ export const deleteCar = async (req, res) =>{
     try {
         const {_id} = req.user;
         const {carId} = req.body
+        
+        if (!carId) {
+            return res.json({ success: false, message: "Car ID is required" });
+        }
+        
         const car = await Car.findById(carId)
 
+        if (!car) {
+            return res.json({ success: false, message: "Car not found" });
+        }
         // Checking is car belongs to the user
         if(car.owner.toString() !== _id.toString()){
             return res.json({ success: false, message: "Unauthorized" });
         }
 
-        car.owner = null;
-        car.isAvailable = false;
-
-        await car.save()
+        await Car.findByIdAndDelete(carId);
 
         res.json({success: true, message: "Car Removed"})
     } catch (error) {
@@ -123,13 +150,22 @@ export const getDashboardData = async (req, res) =>{
 
         const cars = await Car.find({owner: _id})
         const gears = await GearModel.find({owner: _id})
-        const bookings = await Booking.find({ owner: _id }).populate('car').sort({ createdAt: -1 });
+        
+        // Get bookings for both cars and gears owned by this user
+        const carIds = cars.map(car => car._id);
+        const gearIds = gears.map(gear => gear._id);
+        
+        const bookings = await Booking.find({ 
+            vehicleId: { $in: [...carIds, ...gearIds] }
+        }).sort({ createdAt: -1 });
 
-        const pendingBookings = await Booking.find({owner: _id, status: "pending" })
-        const completedBookings = await Booking.find({owner: _id, status: "confirmed" })
+        const pendingBookings = bookings.filter(b => b.status === "pending");
+        const completedBookings = bookings.filter(b => b.status === "confirmed");
 
         // Calculate monthlyRevenue from bookings where status is confirmed
-        const monthlyRevenue = bookings.slice().filter(booking => booking.status === 'confirmed').reduce((acc, booking)=> acc + (booking.price || booking.totalAmount || 0), 0)
+        const monthlyRevenue = completedBookings.reduce((acc, booking) => 
+            acc + (booking.totalAmount || booking.price || 0), 0
+        );
 
         const dashboardData = {
             totalCars: cars.length,
@@ -157,6 +193,9 @@ export const updateUserImage = async (req, res)=>{
 
         const imageFile = req.file;
 
+        if (!imageFile) {
+            return res.json({success: false, message: "Image file is required"});
+        }
         // Upload Image to ImageKit
         const fileBuffer = fs.readFileSync(imageFile.path)
         const response = await imagekit.upload({

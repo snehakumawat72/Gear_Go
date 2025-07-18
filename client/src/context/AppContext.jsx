@@ -49,7 +49,7 @@ function AppProvider({ children }) {
   // ✅ Fetch gears
   const fetchGears = async () => {
     try {
-      const { data } = await axios.get('/api/gears/all');
+      const { data } = await axios.get('/api/user/gears');
       if (data.success) {
         setGears(data.gears || []);
       } else {
