@@ -35,7 +35,7 @@ const Gears = () => {
 
   const searchGearAvailability = async () => {
     try {
-      const { data } = await axios.post('/api/bookings/check-gear-availability', {
+      const { data } = await axios.post('/api/gears/check-availability', {
         location: pickupLocation,
         pickupDate,
         returnDate,

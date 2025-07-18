@@ -1,12 +1,12 @@
 import Booking from "../models/Booking.js";
-import GearModel from "../models/GearModel.js";
+import Gear from "../models/GearModel.js";
 
 // Function to Check Availability of Gear for a given Date
 const checkGearAvailability = async (gear, pickupDate, returnDate) => {
     const bookings = await Booking.find({
-        gear,
-        pickupDate: { $lte: returnDate },
-        returnDate: { $gte: pickupDate },
+        vehicleId: gear,
+        startDate: { $lte: returnDate },
+        endDate: { $gte: pickupDate },
         status: { $nin: ["cancelled", "rejected"] }, // Only consider active bookings
     });
     return bookings.length === 0;

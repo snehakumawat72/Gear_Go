@@ -9,6 +9,7 @@ const gearSchema = new mongoose.Schema({
   description: { type: String, required: true },
   location: { type: String, required: true },
   isAvailable: { type: Boolean, default: true },
+  isAvaliable: { type: Boolean, default: true }, // Keep for backward compatibility
 
   features: { type: [String], default: [] }
 

@@ -46,9 +46,15 @@ export const getOwnerGears = async (req, res) => {
 // ✅ Get All Available Gears (Public)
 export const getAllGears = async (req, res) => {
   try {
-    const gears = await GearModel.find({ isAvailable: true }).sort({ createdAt: -1 });
+    const gears = await GearModel.find({ 
+      $or: [
+        { isAvailable: true },
+        { isAvaliable: true }
+      ]
+    }).sort({ createdAt: -1 });
     res.json({ success: true, gears });
   } catch (error) {
+    console.error('Error fetching gears:', error.message);
     res.json({ success: false, message: error.message });
   }
 };

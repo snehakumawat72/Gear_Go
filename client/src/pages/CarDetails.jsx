@@ -21,6 +21,12 @@ const CarDetails = () => {
   const navigate = useNavigate()
   const [car, setCar] = useState(null)
   const currency = import.meta.env.VITE_CURRENCY || "₹"
+
+  // Calculate number of days
+  const noOfDays = pickupDate && returnDate 
+    ? Math.ceil((new Date(returnDate) - new Date(pickupDate)) / (1000 * 60 * 60 * 24))
+    : 0;
+
 const handleSubmit = async (e) => {
   e.preventDefault();
   console.log("🚗 Submitting car booking");
@@ -38,18 +44,18 @@ const handleSubmit = async (e) => {
   }
 
  const pricePerDay = Number(car?.pricePerDay);
-
-if (!pricePerDay || isNaN(pricePerDay)) {
-  toast.error("Invalid pricePerDay. Please try again.");
-  return;
-}
+  
+  if (!pricePerDay || isNaN(pricePerDay)) {
+    toast.error("Invalid pricePerDay. Please try again.");
+    return;
+  }
 
   const totalAmount = pricePerDay * noOfDays;
 
-if (!Number.isFinite(totalAmount) || totalAmount <= 0) {
-  toast.error("Invalid total amount calculated. Please check your dates or car price.");
-  return;
-}
+  if (!Number.isFinite(totalAmount) || totalAmount <= 0) {
+    toast.error("Invalid total amount calculated. Please check your dates or car price.");
+    return;
+  }
 
   console.log("✅ All validations passed. Creating Razorpay order for ₹", totalAmount);
 
@@ -110,13 +116,6 @@ if (!Number.isFinite(totalAmount) || totalAmount <= 0) {
         color: "#6366f1",
       },
     };
-console.log({
-  car,
-  pricePerDay: Number(car?.pricePerDay),
-  pickupDate,
-  returnDate,
-  noOfDays
-});
 
     const razorpay = new window.Razorpay(options);
     razorpay.open();
@@ -257,6 +256,12 @@ console.log({
           <button className='w-full bg-primary hover:bg-primary-dull transition-all py-3 font-medium text-white rounded-xl cursor-pointer'>
             Book Now
           </button>
+
+          {pickupDate && returnDate && noOfDays > 0 && (
+            <div className='text-center text-sm text-gray-500'>
+              <p>{noOfDays} day{noOfDays > 1 ? 's' : ''} • Total: {currency}{(car?.pricePerDay * noOfDays) || 0}</p>
+            </div>
+          )}
 
           <p className='text-center text-sm'>No credit card required to reserve</p>
         </motion.form>

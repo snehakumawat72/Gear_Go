@@ -42,6 +42,7 @@ const MyBookings = () => {
       <div>
         {bookings.map((booking, index) => {
           const item = booking.car || booking.gear
+          const isCar = Boolean(booking.car)
           if (!item) return null // Skip broken bookings
 
           return (
@@ -58,10 +59,10 @@ const MyBookings = () => {
                   <img src={item.image} alt="" className='w-full h-auto aspect-video object-cover' />
                 </div>
                 <p className='text-lg font-medium mt-2'>
-                  {item.brand ? `${item.brand} ${item.model}` : item.name}
+                  {isCar ? `${item.brand} ${item.model}` : item.name}
                 </p>
                 <p className='text-gray-500'>
-                  {item.year ? `${item.year} • ` : ''}
+                  {isCar && item.year ? `${item.year} • ` : ''}
                   {item.category} • {item.location}
                 </p>
               </div>
@@ -101,7 +102,7 @@ const MyBookings = () => {
                 <div className='text-sm text-gray-500 text-right'>
                   <p>Total Price</p>
                   <h1 className='text-2xl font-semibold text-primary'>
-                    {currency}{booking.price}
+                    {currency}{booking.price || booking.totalAmount || 0}
                   </h1>
                   <p>Booked on {booking.createdAt.split('T')[0]}</p>
                 </div>

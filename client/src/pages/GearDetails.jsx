@@ -22,6 +22,12 @@ const GearDetails = () => {
   const navigate = useNavigate()
   const [gear, setGear] = useState(null)
   const currency = import.meta.env.VITE_CURRENCY || "₹"
+
+  // Calculate number of days
+  const noOfDays = pickupDate && returnDate 
+    ? Math.ceil((new Date(returnDate) - new Date(pickupDate)) / (1000 * 60 * 60 * 24))
+    : 0;
+
 const handleSubmit = async (e) => {
   e.preventDefault();
   console.log("🎒 Submitting gear booking");
@@ -178,16 +184,32 @@ const handleSubmit = async (e) => {
 
             <div className='grid grid-cols-2 sm:grid-cols-4 gap-4'>
               {[
-                { icon: assets.brand_icon, text: gear.brand },
+                { icon: assets.gear_icon, text: gear.category },
                 { icon: assets.location_icon, text: gear.location },
-                { icon: assets.condition_icon, text: gear.condition },
-                { icon: assets.warranty_icon, text: gear.warranty || "No Warranty" },
+                { icon: assets.check_icon, text: gear.features?.[0] || "Feature" },
+                { icon: assets.check_icon, text: gear.features?.[1] || "Feature" },
               ].map(({ icon, text }) => (
                 <motion.div key={text} className='flex flex-col items-center bg-light p-4 rounded-lg'>
                   <img src={icon} alt='' className='h-5 mb-2' />
                   {text}
                 </motion.div>
               ))}
+            </div>
+
+            <div>
+              <h1 className='text-xl font-medium mb-3'>Features</h1>
+              {gear.features && gear.features.length > 0 ? (
+                <ul className='grid grid-cols-1 sm:grid-cols-2 gap-2'>
+                  {gear.features.map((feature, index) => (
+                    <li key={index} className='flex items-center text-gray-500'>
+                      <img src={assets.check_icon} className='h-4 mr-2' alt='' />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className='text-gray-500'>No features listed</p>
+              )}
             </div>
 
             <div>
@@ -240,6 +262,12 @@ const handleSubmit = async (e) => {
           <button className='w-full bg-primary hover:bg-primary-dull transition-all py-3 font-medium text-white rounded-xl cursor-pointer'>
             Book Now
           </button>
+
+          {pickupDate && returnDate && noOfDays > 0 && (
+            <div className='text-center text-sm text-gray-500'>
+              <p>{noOfDays} day{noOfDays > 1 ? 's' : ''} • Total: {currency}{(gear?.pricePerDay * noOfDays) || 0}</p>
+            </div>
+          )}
 
           <p className='text-center text-sm'>No credit card required to reserve</p>
         </motion.form>

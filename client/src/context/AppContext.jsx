@@ -50,9 +50,15 @@ function AppProvider({ children }) {
   const fetchGears = async () => {
     try {
       const { data } = await axios.get('/api/gears/all');
-      data.success ? setGears(data.gears) : toast.error(data.message);
+      if (data.success) {
+        setGears(data.gears || []);
+      } else {
+        console.error('Failed to fetch gears:', data.message);
+        setGears([]);
+      }
     } catch (error) {
-      toast.error(error.message);
+      console.error('Error fetching gears:', error.message);
+      setGears([]);
     }
   };
 
