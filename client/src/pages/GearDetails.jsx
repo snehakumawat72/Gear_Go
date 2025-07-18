@@ -96,6 +96,7 @@ const handleSubmit = async (e) => {
             gear: id,
             pickupDate,
             returnDate,
+           totalAmount,
             customerDetails: {
               name: user.name,
               email: user.email,
@@ -126,6 +127,11 @@ const handleSubmit = async (e) => {
       theme: {
         color: "#6366f1",
       },
+     modal: {
+       ondismiss: function() {
+         console.log("Payment modal closed");
+       }
+     }
     };
 
     const razorpay = new window.Razorpay(options);

@@ -43,10 +43,10 @@ const handleSubmit = async (e) => {
     return;
   }
 
- const pricePerDay = Number(car?.pricePerDay);
+  const pricePerDay = Number(car?.pricePerDay);
   
   if (!pricePerDay || isNaN(pricePerDay)) {
-    toast.error("Invalid pricePerDay. Please try again.");
+    toast.error("Invalid car pricing. Please try again.");
     return;
   }
 
@@ -85,6 +85,7 @@ const handleSubmit = async (e) => {
             car: id,
             pickupDate,
             returnDate,
+           totalAmount,
             customerDetails: {
               name: user.name,
               email: user.email,
@@ -115,6 +116,11 @@ const handleSubmit = async (e) => {
       theme: {
         color: "#6366f1",
       },
+     modal: {
+       ondismiss: function() {
+         console.log("Payment modal closed");
+       }
+     }
     };
 
     const razorpay = new window.Razorpay(options);

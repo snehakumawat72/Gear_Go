@@ -26,8 +26,19 @@ const BookingSchema = new mongoose.Schema({
     phone: { type: String, required: true },
   },
   paymentId: { type: String },
+  orderId: { type: String },
+  signature: { type: String },
   cancellationReason: { type: String },
   refundAmount: { type: Number, default: 0 },
+  
+  // Legacy fields for backward compatibility
+  car: { type: mongoose.Schema.Types.ObjectId, ref: 'Car' },
+  gear: { type: mongoose.Schema.Types.ObjectId, ref: 'Gear' },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  pickupDate: { type: Date },
+  returnDate: { type: Date },
+  price: { type: Number },
 }, {
   timestamps: true
 });

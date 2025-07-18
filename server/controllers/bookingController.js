@@ -36,7 +36,7 @@ export const checkAvailabilityOfCar = async (req, res) => {
 export const createBooking = async (req, res) => {
   try {
     const { _id } = req.user;
-    const { car, gear, pickupDate, returnDate, customerDetails } = req.body;
+    const { car, gear, pickupDate, returnDate, customerDetails, totalAmount, paymentId, orderId, signature } = req.body;
 
     if (!car && !gear) {
       return res.json({ success: false, message: "Missing car or gear ID" });
@@ -46,6 +46,11 @@ export const createBooking = async (req, res) => {
       return res.json({ success: false, message: "Return date must be after pickup date" });
     }
 
+    // Verify payment if payment details are provided
+    if (paymentId && orderId && signature) {
+      // TODO: Add Razorpay signature verification here
+      console.log("Payment verification needed:", { paymentId, orderId, signature });
+    }
     const isGearBooking = Boolean(gear);
     const itemId = gear || car;
 
@@ -66,6 +71,7 @@ export const createBooking = async (req, res) => {
       vehicleId: itemData._id,
       startDate: { $lte: returnDate },
       endDate: { $gte: pickupDate },
+     status: { $nin: ["cancelled", "rejected"] }
     });
 
     if (overlapping.length > 0) {
@@ -75,7 +81,8 @@ export const createBooking = async (req, res) => {
     const noOfDays = Math.ceil(
       (new Date(returnDate) - new Date(pickupDate)) / (1000 * 60 * 60 * 24)
     );
-    const price = itemData.pricePerDay * noOfDays;
+    const calculatedPrice = itemData.pricePerDay * noOfDays;
+    const finalPrice = totalAmount || calculatedPrice;
 
     await Booking.create({
       bookingId: `GB-${uuidv4()}`,
@@ -86,8 +93,11 @@ export const createBooking = async (req, res) => {
       endDate: returnDate,
       pickupLocation: itemData.location || "Unknown",
       dailyRate: itemData.pricePerDay,
-      totalAmount: price,
+      totalAmount: finalPrice,
       customerDetails,
+      paymentStatus: paymentId ? 'paid' : 'pending',
+      status: paymentId ? 'confirmed' : 'pending',
+      paymentId: paymentId || null,
     });
 
     res.json({ success: true, message: `${isGearBooking ? "Gear" : "Car"} booking created` });
