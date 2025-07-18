@@ -41,6 +41,7 @@ function AppProvider({ children }) {
     try {
       const { data } = await axios.get('/api/user/cars');
       data.success ? setCars(data.cars) : toast.error(data.message);
+      console.log("arha h", data)
     } catch (error) {
       toast.error(error.message);
     }

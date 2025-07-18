@@ -1,15 +1,62 @@
 import mongoose from 'mongoose';
 
-const BookingSchema = new mongoose.Schema({
-  bookingId: { type: String, required: true, unique: true },
-  userId: { type: String, required: true },
-  vehicleId: { type: String, required: true },
-  vehicleModel: { type: String, required: true },
-  startDate: { type: Date, required: true },
-  endDate: { type: Date, required: true },
-  pickupLocation: { type: String, required: true },
-  dailyRate: { type: Number, required: true },
-  totalAmount: { type: Number, required: true },
+const { Schema, model, Types } = mongoose;
+
+const BookingSchema = new Schema({
+  bookingId: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true
+  },
+
+  // Customer reference
+  customer: {
+    type: Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+
+  // Vehicle or Gear reference using dynamic ref
+  onModel: {
+    type: String,
+    required: true,
+    enum: ['Car', 'Gear']
+  },
+  vehicle: {
+  type: Types.ObjectId,
+  required: true,
+  refPath: 'onModel'
+},
+
+
+  // Booking period
+  startDate: {
+    type: Date,
+    required: true
+  },
+  endDate: {
+    type: Date,
+    required: true
+  },
+
+  pickupLocation: {
+    type: String,
+    trim: true
+  },
+
+  // Financials
+  dailyRate: {
+    type: Number,
+    min: 0
+  },
+  totalAmount: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+
+  // Statuses
   status: {
     type: String,
     enum: ['pending', 'confirmed', 'cancelled', 'completed'],
@@ -20,16 +67,21 @@ const BookingSchema = new mongoose.Schema({
     enum: ['pending', 'paid', 'failed', 'refunded'],
     default: 'pending'
   },
-  customerDetails: {
-    name: { type: String, required: true },
-    email: { type: String, required: true },
-    phone: { type: String, required: true },
+
+  // Payment reference
+  payment: {
+    type: Types.ObjectId,
+    ref: 'Payment'
   },
-  paymentId: { type: String },
-  cancellationReason: { type: String },
-  refundAmount: { type: Number, default: 0 },
+
+  // Optional refund details
+  refundAmount: {
+    type: Number,
+    default: 0,
+    min: 0
+  }
 }, {
   timestamps: true
 });
 
-export default mongoose.models.Booking || mongoose.model('Booking', BookingSchema);
+export default mongoose.models.Booking || model('Booking', BookingSchema);

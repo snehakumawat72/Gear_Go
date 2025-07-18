@@ -24,111 +24,88 @@ const GearDetails = () => {
   const currency = import.meta.env.VITE_CURRENCY || "₹"
 const handleSubmit = async (e) => {
   e.preventDefault();
-  console.log("🎒 Submitting gear booking");
 
+  // 1. Validate Dates
   if (new Date(returnDate) <= new Date(pickupDate)) {
-    console.log("❌ Invalid dates:", { pickupDate, returnDate });
     toast.error("Return date must be after pickup date");
     return;
   }
 
+  // 2. Validate User Profile
   if (!user?.name || !user?.email || !user?.phone) {
-    console.log("❌ Incomplete user profile:", user);
-    toast.error("Please complete your profile (name, email, phone) before booking.");
+    toast.error("Please complete your profile before booking");
     return;
   }
 
-  if (!gear || gear.pricePerDay == null || isNaN(Number(gear.pricePerDay))) {
-    console.log("❌ Invalid gear pricing data:", gear);
-    toast.error("Invalid gear pricing data.");
+  // 3. Validate Gear Data
+  const rate = Number(gear?.pricePerDay);
+  if (!rate || isNaN(rate)) {
+    toast.error("Invalid price for gear");
     return;
   }
 
-  const noOfDays = Math.ceil(
+  const days = Math.ceil(
     (new Date(returnDate) - new Date(pickupDate)) / (1000 * 60 * 60 * 24)
   );
-
-  if (noOfDays <= 0) {
-    console.log("❌ Invalid number of days:", noOfDays);
-    toast.error("Invalid booking duration.");
-    return;
-  }
-
-  const totalAmount = Number(gear.pricePerDay) * noOfDays;
+  const totalAmount = days * rate;
 
   if (!Number.isFinite(totalAmount) || totalAmount <= 0) {
-    console.log("❌ Invalid total amount:", totalAmount);
-    toast.error("Invalid total amount calculated. Please check your dates or gear price.");
+    toast.error("Invalid total amount");
     return;
   }
 
-  console.log("✅ All validations passed. Creating Razorpay order for ₹", totalAmount);
-
+  // 4. Create Razorpay Order
   try {
-    const { data: orderData } = await axios.post("/api/payment/create-order", {
+    const { data } = await axios.post("/api/bookings/create-order", {
       amount: totalAmount,
+      gearId: gear._id,
+      pickupDate,
+      returnDate,
+      customerDetails: {
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+      },
     });
 
-    console.log("📦 Razorpay Order Data:", orderData);
-
-    if (!orderData.success) {
-      toast.error("Failed to create Razorpay order");
+    if (!data.success) {
+      toast.error("Failed to create payment order");
       return;
     }
 
+    const order = data.order;
+
+    // 5. Razorpay Options
     const options = {
-      key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_TJJgTw6mzJZ1sR",
-      amount: orderData.order.amount,
-      currency: orderData.order.currency,
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: order.amount,
+      currency: order.currency,
+      order_id: order.id,
       name: "GearGo Rentals",
       description: "Gear Rental Payment",
-      order_id: orderData.order.id,
-      handler: async function (response) {
-        console.log("💰 Razorpay Payment Success:", response);
-        try {
-          const { data } = await axios.post("/api/bookings/create", {
-            gear: id,
-            pickupDate,
-            returnDate,
-            customerDetails: {
-              name: user.name,
-              email: user.email,
-              phone: user.phone,
-            },
-            paymentId: response.razorpay_payment_id,
-            orderId: response.razorpay_order_id,
-            signature: response.razorpay_signature,
-          });
-
-          if (data.success) {
-            toast.success("Booking confirmed!");
-            navigate("/my-bookings");
-          } else {
-            console.log("❌ Booking error after payment:", data);
-            toast.error(data.message);
-          }
-        } catch (err) {
-          console.error("❌ Booking API failed:", err.message);
-          toast.error("Booking failed after payment");
-        }
-      },
       prefill: {
         name: user.name,
         email: user.email,
         contact: user.phone,
       },
-      theme: {
-        color: "#6366f1",
+      theme: { color: "#6366f1" },
+      modal: {
+        ondismiss: () => toast.info("Payment popup closed"),
+      },
+      handler: (response) => {
+        console.log("💰 Payment Success:", response);
+        toast.success("Payment successful! Your booking will be confirmed shortly.");
+        navigate("/my-bookings");
       },
     };
 
-    const razorpay = new window.Razorpay(options);
-    razorpay.open();
-  } catch (error) {
-    console.error("❌ Razorpay order creation failed:", error.message);
-    toast.error("Something went wrong during payment initiation.");
+    new window.Razorpay(options).open();
+  } catch (err) {
+    console.error("❌ create-order error:", err);
+    toast.error("Could not initiate payment");
   }
 };
+
 
 
   useEffect(() => {

@@ -1,117 +1,153 @@
-import React, { useEffect, useState } from 'react'
-import { assets } from '../assets/assets'
-import Title from '../components/Title'
-import { useAppContext } from '../context/AppContext'
-import toast from 'react-hot-toast'
-import { motion } from 'framer-motion'
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const MyBookings = () => {
-  const { axios, user, currency } = useAppContext()
-  const [bookings, setBookings] = useState([])
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const fetchMyBookings = async () => {
-    try {
-      const { data } = await axios.get('/api/bookings/user')
-      if (data.success) {
-        setBookings(data.bookings)
-      } else {
-        toast.error(data.message)
-      }
-    } catch (error) {
-      toast.error(error.message)
-    }
-  }
+  const currency = '₹'; // or '$' or use booking.currency
 
   useEffect(() => {
-    user && fetchMyBookings()
-  }, [user])
+    const fetchBookings = async () => {
+      try {
+        console.log('Fetching bookings...');
+        const res = await axios.get('/api/bookings/user'); // Your actual API route
+        console.log('Bookings fetched:', res.data);
+        if (res.data.success) {
+          setBookings(res.data.bookings);
+        } else {
+          console.error('Failed to fetch bookings');
+        }
+      } catch (error) {
+        console.error('Error fetching bookings:', error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookings();
+  }, []);
+
+  if (loading) return <p className="text-center mt-10">Loading your bookings...</p>;
+
+  if (!bookings.length) return <p className="text-center mt-10">No bookings found.</p>;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-      className='px-6 md:px-16 lg:px-24 xl:px-32 2xl:px-48 mt-16 text-sm max-w-7xl'
-    >
-      <Title
-        title='My Bookings'
-        subTitle='View and manage your all car & gear bookings'
-        align='left'
-      />
+    <div className="max-w-5xl mx-auto p-4">
+      <h2 className="text-2xl font-bold mb-6">My Bookings</h2>
 
-      <div>
-        {bookings.map((booking, index) => {
-          const item = booking.car || booking.gear
-          if (!item) return null // Skip broken bookings
-
-          return (
-            <motion.div
-              key={booking._id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1, duration: 0.4 }}
-              className='grid grid-cols-1 md:grid-cols-4 gap-6 p-6 border border-borderColor rounded-lg mt-5 first:mt-12'
-            >
-              {/* Image + Info */}
-              <div className='md:col-span-1'>
-                <div className='rounded-md overflow-hidden mb-3'>
-                  <img src={item.image} alt="" className='w-full h-auto aspect-video object-cover' />
+      {bookings.length === 0 ? (
+        <p className="text-gray-500">No bookings found.</p>
+      ) : (
+        <div className="grid gap-6">
+          {bookings.map((booking) => {
+            const item = booking.item || booking.vehicle || {};
+            return (
+              <div
+                key={booking._id}
+                className="border border-gray-300 rounded-lg shadow hover:shadow-lg transition p-4 md:flex gap-4"
+              >
+                {/* Vehicle Image */}
+                <div className="w-full md:w-1/3">
+                  <img
+                    src={item.image}
+                    alt={item.brand || item.name}
+                    className="w-full h-48 object-cover rounded-md"
+                  />
                 </div>
-                <p className='text-lg font-medium mt-2'>
-                  {item.brand ? `${item.brand} ${item.model}` : item.name}
-                </p>
-                <p className='text-gray-500'>
-                  {item.year ? `${item.year} • ` : ''}
-                  {item.category} • {item.location}
-                </p>
-              </div>
 
-              {/* Booking Info */}
-              <div className='md:col-span-2'>
-                <div className='flex items-center gap-2'>
-                  <p className='px-3 py-1.5 bg-light rounded'>Booking #{index + 1}</p>
-                  <p className={`px-3 py-1 text-xs rounded-full ${
-                    booking.status === 'confirmed'
-                      ? 'bg-green-400/15 text-green-600'
-                      : 'bg-red-400/15 text-red-600'
-                  }`}>
-                    {booking.status}
+                {/* Booking Details */}
+                <div className="w-full md:w-2/3">
+                  <h3 className="text-xl font-semibold">
+                    {item.brand ? `${item.brand} ${item.model}` : item.name}
+                  </h3>
+
+                  <p className="text-sm text-gray-500 mb-2">
+                    {item.year && `${item.year} • `}
+                    {item.fuel_type} • {item.transmission}
                   </p>
-                </div>
 
-                <div className='flex items-start gap-2 mt-3'>
-                  <img src={assets.calendar_icon_colored} alt="" className='w-4 h-4 mt-1' />
-                  <div>
-                    <p className='text-gray-500'>Rental Period</p>
-                    <p>{booking.pickupDate.split('T')[0]} To {booking.returnDate.split('T')[0]}</p>
-                  </div>
-                </div>
+                  <p className="mb-1">
+                    <strong>Seating:</strong> {item.seating_capacity || "N/A"}
+                  </p>
 
-                <div className='flex items-start gap-2 mt-3'>
-                  <img src={assets.location_icon_colored} alt="" className='w-4 h-4 mt-1' />
-                  <div>
-                    <p className='text-gray-500'>Pick-up Location</p>
-                    <p>{item.location}</p>
-                  </div>
+                  <p className="mb-1">
+                    <strong>Location:</strong>{" "}
+                    {booking.pickupLocation || item.location || "N/A"}
+                  </p>
+
+                  <p className="mb-1">
+                    <strong>Booking Dates:</strong>{" "}
+                    {new Date(booking.startDate).toLocaleDateString()} →{" "}
+                    {new Date(booking.endDate).toLocaleDateString()}
+                  </p>
+
+                  <p className="mb-1">
+                    <strong>Total Amount:</strong>{" "}
+                    {currency}
+                    {booking.totalAmount.toFixed(2)}
+                  </p>
+
+                  <p className="mb-1">
+                    <strong>Status:</strong>{" "}
+                    <span
+                      className={`font-medium ${
+                        booking.status === "confirmed"
+                          ? "text-green-600"
+                          : booking.status === "cancelled"
+                          ? "text-red-500"
+                          : "text-yellow-600"
+                      }`}
+                    >
+                      {booking.status}
+                    </span>
+                  </p>
+
+                  <p className="mb-1">
+                    <strong>Payment:</strong>{" "}
+                    <span
+                      className={`font-medium ${
+                        booking.paymentStatus === "paid"
+                          ? "text-green-600"
+                          : booking.paymentStatus === "failed"
+                          ? "text-red-500"
+                          : "text-gray-600"
+                      }`}
+                    >
+                      {booking.paymentStatus}
+                    </span>
+                  </p>
+
+                  {/* Payment Extra Info */}
+                  {booking.payment && (
+                    <div className="mt-2 text-sm text-gray-600">
+                      <p>💳 Method: {booking.payment.method || "N/A"}</p>
+                      <p>
+                        🧾 Amount: {currency}
+                        {booking.payment.amount || 0}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Description (optional) */}
+                  {item.description && (
+                    <details className="mt-3 text-sm text-gray-700">
+                      <summary className="cursor-pointer text-blue-600">
+                        Show Vehicle Description
+                      </summary>
+                      <p className="mt-1 whitespace-pre-line">
+                        {item.description}
+                      </p>
+                    </details>
+                  )}
                 </div>
               </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};
 
-              {/* Price */}
-              <div className='md:col-span-1 flex flex-col justify-between gap-6'>
-                <div className='text-sm text-gray-500 text-right'>
-                  <p>Total Price</p>
-                  <h1 className='text-2xl font-semibold text-primary'>
-                    {currency}{booking.price}
-                  </h1>
-                  <p>Booked on {booking.createdAt.split('T')[0]}</p>
-                </div>
-              </div>
-            </motion.div>
-          )
-        })}
-      </div>
-    </motion.div>
-  )
-}
-
-export default MyBookings
+export default MyBookings;

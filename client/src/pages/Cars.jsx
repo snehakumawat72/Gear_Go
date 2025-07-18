@@ -14,6 +14,7 @@ const Cars = () => {
   const returnDate = searchParams.get('returnDate');
 
   const { cars = [], axios } = useAppContext();
+  console.log("cars",cars)
   const [input, setInput] = useState('');
   const [filteredCars, setFilteredCars] = useState([]);
 
