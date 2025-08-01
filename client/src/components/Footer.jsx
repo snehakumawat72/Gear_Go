@@ -1,15 +1,20 @@
 import React from 'react';
 import { assets } from '../assets/assets';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const Footer = () => {
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
+  
   return (
     <motion.footer
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className="bg-gradient-to-br from-slate-50 to-white text-slate-700 px-6 md:px-16 lg:px-24 xl:px-40 py-16 mt-20 border-t border-slate-200"
+      className={`bg-gradient-to-br from-slate-50 to-white text-slate-700 px-6 md:px-16 lg:px-24 xl:px-40 border-t border-slate-200 ${
+        isHomePage ? 'py-8' : 'py-16 mt-20'
+      }`}
     >
       {/* Top Section */}
       <div className="flex flex-col lg:flex-row justify-between items-start gap-12 pb-8 border-b border-slate-200">

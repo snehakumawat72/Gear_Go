@@ -5,6 +5,12 @@
 *{
   font-family: "Outfit", sans-serif;
 }
+html {
+  scroll-padding-top: 80px; /* Adjust based on your navbar height */
+}
+body {
+  padding-top: 80px; /* Adjust to match navbar height */
+}
 
 @theme {
   --color-primary: #2563EB;
