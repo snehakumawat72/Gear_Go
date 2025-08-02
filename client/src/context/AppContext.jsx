@@ -86,7 +86,7 @@ function AppProvider({ children }) {
   // ✅ Fetch user when token is set
   useEffect(() => {
     if (token) {
-      axios.defaults.headers.common['Authorization'] = ` Bearer ${token}`;
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       fetchUser();
     }
   }, [token]);

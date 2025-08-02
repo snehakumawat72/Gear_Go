@@ -66,6 +66,28 @@ const handleSubmit = async (e) => {
     return;
   }
 
+  // if car is available or not
+  const checkingAvailability = await axios.post('/api/bookings/check-availability', {
+    car: id,
+    pickupDate,
+    returnDate,
+    totalAmount,
+    customerDetails: {
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+    },
+  });
+  // console.log("🔍 Checking car availability:", checkingAvailability.data);
+  
+  if (!checkingAvailability.data.success) {
+    // console.log("❌ Car availability check failed:", checkingAvailability.data.message);
+    console.log("❌ Car is not available for the selected dates");
+    toast.error(checkingAvailability.data.message || "Car is not available for the selected dates.");
+    return;
+  }
+
+
   console.log("✅ All validations passed. Creating Razorpay order for ₹", totalAmount);
 
   setLoading(true);

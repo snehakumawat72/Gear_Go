@@ -5,12 +5,14 @@
 *{
   font-family: "Outfit", sans-serif;
 }
-html {
-  scroll-padding-top: 80px; /* Adjust based on your navbar height */
+
+/* adjust for nav bar */
+/* html {
+  scroll-padding-top: 80px; 
 }
 body {
-  padding-top: 80px; /* Adjust to match navbar height */
-}
+  padding-top: 80px; 
+} */
 
 @theme {
   --color-primary: #2563EB;

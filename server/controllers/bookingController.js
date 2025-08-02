@@ -8,8 +8,37 @@ import crypto from 'crypto';
 export const checkAvailabilityOfCar = async (req, res) => {
   try {
     const { location, pickupDate, returnDate } = req.body;
+    const {car} = req.body;
 
-    const cars = await Car.find({ location, isAvailable: true });
+    // checking for a single car before buying
+    if(car) {
+      const carData = await Car.findById(car);
+      // console.log("cardata " , carData);
+      if (!carData) {
+        return res.json({ success: false, message: "Car not found" });
+      }
+      // check if car is available from pickupDate to returnDate
+      const bookings = await Booking.find({
+        vehicleId: carData._id,
+        startDate: { $lte: returnDate },
+        endDate: { $gte: pickupDate },
+        status: { $nin: ["cancelled", "rejected"] }
+      });
+      const isAvailable = bookings.length === 0 && carData.isAvailable;
+      if (!isAvailable) {
+        return res.json({ success: false, message: "Car is not available for the selected dates" });
+      }
+      // If available, return the car data
+      carData.isAvailable = isAvailable;
+      
+      return res.json({ success: true, availableCars: [carData] });
+    }
+
+
+    // const cars = await Car.find({ location, isAvailable: true });
+    
+    const cars = await Car.find({ isAvailable: true });
+
 
     const availableCarsPromises = cars.map(async (car) => {
       const bookings = await Booking.find({
@@ -64,7 +93,7 @@ export const createBooking = async (req, res) => {
         return res.json({ success: false, message: "Payment verification failed" });
       }
     }
-    
+
     const isGearBooking = Boolean(gear);
     const itemId = gear || car;
 
@@ -85,7 +114,7 @@ export const createBooking = async (req, res) => {
       vehicleId: itemData._id,
       startDate: { $lte: returnDate },
       endDate: { $gte: pickupDate },
-     status: { $nin: ["cancelled", "rejected"] }
+      status: { $nin: ["cancelled", "rejected"] }
     });
 
     if (overlapping.length > 0) {
@@ -115,7 +144,7 @@ export const createBooking = async (req, res) => {
       paymentStatus: paymentId ? 'paid' : 'pending',
       status: paymentId ? 'confirmed' : 'pending',
       paymentId: paymentId || null,
-      
+
       // Legacy fields for backward compatibility
       car: isGearBooking ? null : itemData._id,
       gear: isGearBooking ? itemData._id : null,
@@ -143,7 +172,7 @@ export const getUserBookings = async (req, res) => {
   try {
     const { _id } = req.user;
 
-    const bookings = await Booking.find({ 
+    const bookings = await Booking.find({
       $or: [
         { userId: _id },
         { user: _id }
@@ -155,7 +184,7 @@ export const getUserBookings = async (req, res) => {
       bookings.map(async (booking) => {
         let car = null;
         let gear = null;
-        
+
         if (booking.car) {
           car = await Car.findById(booking.car);
         } else if (booking.vehicleId) {
@@ -165,11 +194,11 @@ export const getUserBookings = async (req, res) => {
             gear = await Gear.findById(booking.vehicleId);
           }
         }
-        
+
         if (booking.gear) {
           gear = await Gear.findById(booking.gear);
         }
-        
+
         return {
           ...booking.toObject(),
           car,
@@ -199,12 +228,14 @@ export const getOwnerBookings = async (req, res) => {
       ]
     }).sort({ createdAt: -1 });
 
+    console.log("Bookings for Owner:", bookings);
+
     // Populate car and gear data
     const populatedBookings = await Promise.all(
       bookings.map(async (booking) => {
         let car = null;
         let gear = null;
-        
+
         if (booking.car) {
           car = await Car.findById(booking.car);
         } else if (booking.vehicleId) {
@@ -213,11 +244,11 @@ export const getOwnerBookings = async (req, res) => {
             gear = await Gear.findById(booking.vehicleId);
           }
         }
-        
+
         if (booking.gear) {
           gear = await Gear.findById(booking.gear);
         }
-        
+
         return {
           ...booking.toObject(),
           car,
@@ -227,7 +258,7 @@ export const getOwnerBookings = async (req, res) => {
     );
     res.json({ success: true, bookings: populatedBookings });
   } catch (error) {
-    console.error(error.message);
+    console.error("owner booking error " ,error.message);
     res.status(500).json({ success: false, message: error.message });
   }
 };

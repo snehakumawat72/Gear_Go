@@ -35,7 +35,7 @@ export const protect = async (req, res, next) => {
   }
 };
 export const admin = (req, res, next) => {
-  if (req.user.role !== "admin") {
+  if (req.user.role !== "admin") { // NOTE: role is admin or owner
     return res.status(403).json({ success: false, message: "Forbidden: Admins only" });
   }
   next();
