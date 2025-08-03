@@ -169,7 +169,7 @@ const CarDetails = () => {
               toast.error(data.message);
             }
           } catch (err) {
-            toast.error("Booking failed after payment");
+            toast.error("Booking failed after payment", err);
           }
         },
         prefill: {
@@ -190,7 +190,7 @@ const CarDetails = () => {
       const razorpay = new window.Razorpay(options);
       razorpay.open();
     } catch (error) {
-      toast.error("Something went wrong during payment initiation.");
+      toast.error("Something went wrong during payment initiation.", error);
       setLoading(false);
     }
   };
@@ -213,6 +213,14 @@ const CarDetails = () => {
     return nextDay.toISOString().split('T')[0];
   };
 
+  {/* Reusable component for consistent section styling */ }
+  const DetailSection = ({ title, children }) => (
+    <div>
+      <h2 className="text-xl font-semibold text-gray-800 mb-4">{title}</h2>
+      {children}
+    </div>
+  );
+
   return car ? (
     <div className='px-6 md:px-16 lg:px-24 xl:px-32 mt-16'>
       <button
@@ -224,7 +232,6 @@ const CarDetails = () => {
       </button>
 
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12'>
-        {/* Left Section (No changes here) */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -237,19 +244,19 @@ const CarDetails = () => {
             transition={{ duration: 0.5 }}
             src={car.image}
             alt={`${car.brand} ${car.model}`}
-            className='w-full h-auto md:max-h-100 object-cover rounded-xl mb-6 shadow-md'
+            className='w-full h-auto object-cover rounded-xl mb-6 shadow-lg'
           />
           <motion.div
-            className='space-y-6'
+            className='space-y-8'
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
           >
             <div>
-              <h1 className='text-3xl font-bold'>{car.brand} {car.model}</h1>
-              <p className='text-gray-500 text-lg'>{car.category} • {car.year}</p>
+              <h1 className='text-4xl font-bold text-gray-900'>{car.brand} {car.model}</h1>
+              <p className='text-gray-500 text-lg mt-1'>{car.category} • {car.year}</p>
             </div>
-            <hr className='border-borderColor my-6' />
+            {/* <hr className='border-gray-200' /> */}
             <div className='grid grid-cols-2 sm:grid-cols-4 gap-4'>
               {[
                 { icon: assets.users_icon, text: `${car.seating_capacity} Seats` },
@@ -257,30 +264,34 @@ const CarDetails = () => {
                 { icon: assets.car_icon, text: car.transmission },
                 { icon: assets.location_icon, text: car.location },
               ].map(({ icon, text }) => (
-                <motion.div
+                <div
                   key={text}
-                  className='flex flex-col items-center bg-light p-4 rounded-lg'
+                  className='flex flex-col items-center text-center p-3 border border-gray-200 rounded-lg transition-all duration-300 hover:shadow-md hover:border-primary'
                 >
-                  <img src={icon} alt='' className='h-5 mb-2' />
-                  {text}
-                </motion.div>
+                  <img src={icon} alt='' className='h-6 mb-2 text-primary' />
+                  <span className='text-sm text-gray-700 font-medium'>{text}</span>
+                </div>
               ))}
             </div>
-            <div>
-              <h1 className='text-xl font-medium mb-3'>Description</h1>
-              <p className='text-gray-500'>{car.description}</p>
-            </div>
-            <div>
-              <h1 className='text-xl font-medium mb-3'>Features</h1>
-              <ul className='grid grid-cols-1 sm:grid-cols-2 gap-2'>
-                {["360 Camera", "Bluetooth", "GPS", "Heated Seats", "Rear View Mirror"].map((item) => (
-                  <li key={item} className='flex items-center text-gray-500'>
-                    <img src={assets.check_icon} className='h-4 mr-2' alt='' />
+
+            {/* Description Section - USING REUSABLE COMPONENT */}
+            <DetailSection title="Description">
+              <p className='text-gray-600 leading-relaxed'>{car.description}</p>
+            </DetailSection>
+
+            <DetailSection title="Features">
+              <ul className='grid grid-cols-2 gap-x-6 gap-y-3'>
+                {/* NOTE: look into it */}
+                {/* Assumes car.features is an array of strings. Provides a fallback. */}
+                {(car.features || ["Bluetooth", "GPS", "Heated Seats", "Sunroof", "USB Input"]).map((item) => (
+                  <li key={item} className='flex items-center text-gray-600'>
+                    <img src={assets.check_icon} className='h-4 w-4 mr-3' alt='check mark' />
                     {item}
                   </li>
                 ))}
               </ul>
-            </div>
+            </DetailSection>
+
           </motion.div>
         </motion.div>
 
