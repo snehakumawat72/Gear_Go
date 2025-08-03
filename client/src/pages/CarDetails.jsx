@@ -24,159 +24,159 @@ const CarDetails = () => {
   const currency = import.meta.env.VITE_CURRENCY || "₹"
 
   // Calculate number of days
-  const noOfDays = pickupDate && returnDate 
+  const noOfDays = pickupDate && returnDate
     ? Math.ceil((new Date(returnDate) - new Date(pickupDate)) / (1000 * 60 * 60 * 24))
     : 0;
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  
-  if (loading) return;
-  
-  console.log("🚗 Submitting car booking");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  // Validation
-  if (new Date(returnDate) <= new Date(pickupDate)) {
-    console.log("❌ Invalid dates:", { pickupDate, returnDate });
-    toast.error("Return date must be after pickup date");
-    return;
-  }
+    if (loading) return;
 
-  if (!pickupDate || !returnDate) {
-    toast.error("Please select pickup and return dates");
-    return;
-  }
-  if (!user?.name || !user?.email || !user?.phone) {
-    console.log("❌ Incomplete user profile:", user);
-    toast.error("Please complete your profile (name, email, phone) before booking.");
-    return;
-  }
+    console.log("🚗 Submitting car booking");
 
-  const pricePerDay = Number(car?.pricePerDay);
-  
-  if (!pricePerDay || isNaN(pricePerDay)) {
-    toast.error("Invalid car pricing. Please try again.");
-    return;
-  }
-
-  const totalAmount = pricePerDay * noOfDays;
-
-  if (!Number.isFinite(totalAmount) || totalAmount <= 0) {
-    toast.error("Invalid total amount calculated. Please check your dates or car price.");
-    return;
-  }
-
-  // if car is available or not
-  const checkingAvailability = await axios.post('/api/bookings/check-availability', {
-    car: id,
-    pickupDate,
-    returnDate,
-    totalAmount,
-    customerDetails: {
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-    },
-  });
-  // console.log("🔍 Checking car availability:", checkingAvailability.data);
-  
-  if (!checkingAvailability.data.success) {
-    // console.log("❌ Car availability check failed:", checkingAvailability.data.message);
-    console.log("❌ Car is not available for the selected dates");
-    toast.error(checkingAvailability.data.message || "Car is not available for the selected dates.");
-    return;
-  }
-
-
-  console.log("✅ All validations passed. Creating Razorpay order for ₹", totalAmount);
-
-  setLoading(true);
-  
-  try {
-    const { data: orderData } = await axios.post("/api/payment/create-order", {
-      amount: totalAmount,
-    });
-
-    console.log("📦 Razorpay Order Data:", orderData);
-
-    if (!orderData.success) {
-      toast.error("Failed to create Razorpay order");
+    // Validation
+    if (new Date(returnDate) <= new Date(pickupDate)) {
+      console.log("❌ Invalid dates:", { pickupDate, returnDate });
+      toast.error("Return date must be after pickup date");
       return;
     }
 
-    const options = {
-      key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_TJJgTw6mzJZ1sR",
-      amount: orderData.order.amount,
-      currency: orderData.order.currency,
-      name: "GearGo Rentals",
-      description: "Car Rental Payment",
-      order_id: orderData.order.id,
-      handler: async function (response) {
-        console.log("💰 Razorpay Payment Success:", response);
-        try {
-          const { data } = await axios.post("/api/bookings/create", {
-            car: id,
-            pickupDate,
-            returnDate,
-           totalAmount,
-            customerDetails: {
-              name: user.name,
-              email: user.email,
-              phone: user.phone,
-            },
-            paymentId: response.razorpay_payment_id,
-            orderId: response.razorpay_order_id,
-            signature: response.razorpay_signature,
-          });
+    if (!pickupDate || !returnDate) {
+      toast.error("Please select pickup and return dates");
+      return;
+    }
+    if (!user?.name || !user?.email || !user?.phone) {
+      console.log("❌ Incomplete user profile:", user);
+      toast.error("Please complete your profile (name, email, phone) before booking.");
+      return;
+    }
 
-          if (data.success) {
-            toast.success("Booking confirmed!");
-            navigate("/my-bookings");
-          } else {
-            console.log("❌ Booking error after payment:", data);
-            toast.error(data.message);
-          }
-        } catch (err) {
-          console.error("❌ Booking API failed:", err.message);
-          toast.error("Booking failed after payment");
-        }
-      },
-      prefill: {
+    const pricePerDay = Number(car?.pricePerDay);
+
+    if (!pricePerDay || isNaN(pricePerDay)) {
+      toast.error("Invalid car pricing. Please try again.");
+      return;
+    }
+
+    const totalAmount = pricePerDay * noOfDays;
+
+    if (!Number.isFinite(totalAmount) || totalAmount <= 0) {
+      toast.error("Invalid total amount calculated. Please check your dates or car price.");
+      return;
+    }
+
+    // if car is available or not
+    const checkingAvailability = await axios.post('/api/bookings/check-availability', {
+      car: id,
+      pickupDate,
+      returnDate,
+      totalAmount,
+      customerDetails: {
         name: user.name,
         email: user.email,
-        contact: user.phone,
+        phone: user.phone,
       },
-      theme: {
-        color: "#6366f1",
-      },
-     modal: {
-       ondismiss: function() {
-         console.log("Payment modal closed");
-         setLoading(false);
-       }
-     }
-    };
+    });
+    // console.log("🔍 Checking car availability:", checkingAvailability.data);
 
-    const razorpay = new window.Razorpay(options);
-    razorpay.open();
-  } catch (error) {
-    console.error("❌ Razorpay order creation failed:", error.message);
-    toast.error("Something went wrong during payment initiation.");
-  } finally {
-    setLoading(false);
-  }
-};
-
- useEffect(() => {
-  if (cars && cars.length > 0) {
-    const selectedCar = cars.find((c) => c._id === id);
-    if (selectedCar) {
-      setCar(selectedCar);
-    } else {
-      toast.error("Car not found.");
+    if (!checkingAvailability.data.success) {
+      // console.log("❌ Car availability check failed:", checkingAvailability.data.message);
+      console.log("❌ Car is not available for the selected dates");
+      toast.error(checkingAvailability.data.message || "Car is not available for the selected dates.");
+      return;
     }
-  }
-}, [cars, id]);
+
+
+    console.log("✅ All validations passed. Creating Razorpay order for ₹", totalAmount);
+
+    setLoading(true);
+
+    try {
+      const { data: orderData } = await axios.post("/api/payment/create-order", {
+        amount: totalAmount,
+      });
+
+      console.log("📦 Razorpay Order Data:", orderData);
+
+      if (!orderData.success) {
+        toast.error("Failed to create Razorpay order");
+        return;
+      }
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_TJJgTw6mzJZ1sR",
+        amount: orderData.order.amount,
+        currency: orderData.order.currency,
+        name: "GearGo Rentals",
+        description: "Car Rental Payment",
+        order_id: orderData.order.id,
+        handler: async function (response) {
+          console.log("💰 Razorpay Payment Success:", response);
+          try {
+            const { data } = await axios.post("/api/bookings/create", {
+              car: id,
+              pickupDate,
+              returnDate,
+              totalAmount,
+              customerDetails: {
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+              },
+              paymentId: response.razorpay_payment_id,
+              orderId: response.razorpay_order_id,
+              signature: response.razorpay_signature,
+            });
+
+            if (data.success) {
+              toast.success("Booking confirmed!");
+              navigate("/my-bookings");
+            } else {
+              console.log("❌ Booking error after payment:", data);
+              toast.error(data.message);
+            }
+          } catch (err) {
+            console.error("❌ Booking API failed:", err.message);
+            toast.error("Booking failed after payment");
+          }
+        },
+        prefill: {
+          name: user.name,
+          email: user.email,
+          contact: user.phone,
+        },
+        theme: {
+          color: "#6366f1",
+        },
+        modal: {
+          ondismiss: function () {
+            console.log("Payment modal closed");
+            setLoading(false);
+          }
+        }
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+    } catch (error) {
+      console.error("❌ Razorpay order creation failed:", error.message);
+      toast.error("Something went wrong during payment initiation.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (cars && cars.length > 0) {
+      const selectedCar = cars.find((c) => c._id === id);
+      if (selectedCar) {
+        setCar(selectedCar);
+      } else {
+        toast.error("Car not found.");
+      }
+    }
+  }, [cars, id]);
 
 
   return car ? (
