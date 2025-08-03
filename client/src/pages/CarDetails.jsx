@@ -23,46 +23,93 @@ const CarDetails = () => {
   const [loading, setLoading] = useState(false)
   const currency = import.meta.env.VITE_CURRENCY || "₹"
 
-  // Calculate number of days
-  const noOfDays = pickupDate && returnDate
-    ? Math.ceil((new Date(returnDate) - new Date(pickupDate)) / (1000 * 60 * 60 * 24))
-    : 0;
+  // State to hold the detailed pricing breakdown
+  const [pricingDetails, setPricingDetails] = useState(null);
+
+  // --- DYNAMIC PRICING LOGIC ---
+  useEffect(() => {
+    if (!pickupDate || !returnDate || !car) {
+      setPricingDetails(null);
+      return;
+    }
+
+    const pDate = new Date(pickupDate);
+    const rDate = new Date(returnDate);
+
+    if (rDate <= pDate) {
+      setPricingDetails(null);
+      return;
+    }
+
+    const noOfDays = Math.ceil((rDate - pDate) / (1000 * 60 * 60 * 24));
+
+    if (noOfDays <= 0) {
+      setPricingDetails(null);
+      return;
+    }
+
+    const baseAmount = car.pricePerDay * noOfDays;
+    let urgentBookingFee = 0;
+    let weekendSurcharge = 0;
+    let longTermDiscount = 0;
+
+    // 1. Urgent Booking Surcharge (15% if pickup is within 2 days)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Normalize today's date
+    const daysUntilPickup = (pDate - today) / (1000 * 60 * 60 * 24);
+    if (daysUntilPickup < 2) {
+      urgentBookingFee = baseAmount * 0.15;
+    }
+
+    // 2. Weekend Surcharge (10% if booking includes Fri, Sat, or Sun)
+    let includesWeekend = false;
+    for (let i = 0; i < noOfDays; i++) {
+      const currentDay = new Date(pDate.getTime() + i * (1000 * 60 * 60 * 24)).getDay();
+      if ([0, 5, 6].includes(currentDay)) { // 0:Sun, 5:Fri, 6:Sat
+        includesWeekend = true;
+        break;
+      }
+    }
+    if (includesWeekend) {
+      weekendSurcharge = baseAmount * 0.10;
+    }
+
+    // 3. Long-Term Discount (10% for 7+ days, 20% for 30+ days)
+    if (noOfDays >= 30) {
+      longTermDiscount = baseAmount * 0.20;
+    } else if (noOfDays >= 7) {
+      longTermDiscount = baseAmount * 0.10;
+    }
+
+    const totalAmount = baseAmount + urgentBookingFee + weekendSurcharge - longTermDiscount;
+
+    setPricingDetails({
+      noOfDays,
+      baseAmount,
+      urgentBookingFee,
+      weekendSurcharge,
+      longTermDiscount,
+      totalAmount
+    });
+
+  }, [pickupDate, returnDate, car]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (loading) return;
 
-    console.log("🚗 Submitting car booking");
+    // Use the calculated total amount from our dynamic pricing state
+    const totalAmount = pricingDetails?.totalAmount;
 
     // Validation
-    if (new Date(returnDate) <= new Date(pickupDate)) {
-      console.log("❌ Invalid dates:", { pickupDate, returnDate });
-      toast.error("Return date must be after pickup date");
+    if (!totalAmount || totalAmount <= 0) {
+      toast.error("Please select valid dates to calculate the price.");
       return;
     }
 
-    if (!pickupDate || !returnDate) {
-      toast.error("Please select pickup and return dates");
-      return;
-    }
     if (!user?.name || !user?.email || !user?.phone) {
-      console.log("❌ Incomplete user profile:", user);
       toast.error("Please complete your profile (name, email, phone) before booking.");
-      return;
-    }
-
-    const pricePerDay = Number(car?.pricePerDay);
-
-    if (!pricePerDay || isNaN(pricePerDay)) {
-      toast.error("Invalid car pricing. Please try again.");
-      return;
-    }
-
-    const totalAmount = pricePerDay * noOfDays;
-
-    if (!Number.isFinite(totalAmount) || totalAmount <= 0) {
-      toast.error("Invalid total amount calculated. Please check your dates or car price.");
       return;
     }
 
@@ -71,24 +118,12 @@ const CarDetails = () => {
       car: id,
       pickupDate,
       returnDate,
-      totalAmount,
-      customerDetails: {
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-      },
     });
-    // console.log("🔍 Checking car availability:", checkingAvailability.data);
 
     if (!checkingAvailability.data.success) {
-      // console.log("❌ Car availability check failed:", checkingAvailability.data.message);
-      console.log("❌ Car is not available for the selected dates");
       toast.error(checkingAvailability.data.message || "Car is not available for the selected dates.");
       return;
     }
-
-
-    console.log("✅ All validations passed. Creating Razorpay order for ₹", totalAmount);
 
     setLoading(true);
 
@@ -97,10 +132,9 @@ const CarDetails = () => {
         amount: totalAmount,
       });
 
-      console.log("📦 Razorpay Order Data:", orderData);
-
       if (!orderData.success) {
         toast.error("Failed to create Razorpay order");
+        setLoading(false);
         return;
       }
 
@@ -109,16 +143,15 @@ const CarDetails = () => {
         amount: orderData.order.amount,
         currency: orderData.order.currency,
         name: "GearGo Rentals",
-        description: "Car Rental Payment",
+        description: `Booking for ${car.brand} ${car.model}`,
         order_id: orderData.order.id,
         handler: async function (response) {
-          console.log("💰 Razorpay Payment Success:", response);
           try {
             const { data } = await axios.post("/api/bookings/create", {
               car: id,
               pickupDate,
               returnDate,
-              totalAmount,
+              totalAmount, // Send the final calculated amount
               customerDetails: {
                 name: user.name,
                 email: user.email,
@@ -133,11 +166,9 @@ const CarDetails = () => {
               toast.success("Booking confirmed!");
               navigate("/my-bookings");
             } else {
-              console.log("❌ Booking error after payment:", data);
               toast.error(data.message);
             }
           } catch (err) {
-            console.error("❌ Booking API failed:", err.message);
             toast.error("Booking failed after payment");
           }
         },
@@ -151,7 +182,6 @@ const CarDetails = () => {
         },
         modal: {
           ondismiss: function () {
-            console.log("Payment modal closed");
             setLoading(false);
           }
         }
@@ -160,9 +190,7 @@ const CarDetails = () => {
       const razorpay = new window.Razorpay(options);
       razorpay.open();
     } catch (error) {
-      console.error("❌ Razorpay order creation failed:", error.message);
       toast.error("Something went wrong during payment initiation.");
-    } finally {
       setLoading(false);
     }
   };
@@ -178,6 +206,12 @@ const CarDetails = () => {
     }
   }, [cars, id]);
 
+  const getMinReturnDate = () => {
+    if (!pickupDate) return '';
+    const nextDay = new Date(pickupDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+    return nextDay.toISOString().split('T')[0];
+  };
 
   return car ? (
     <div className='px-6 md:px-16 lg:px-24 xl:px-32 mt-16'>
@@ -190,7 +224,7 @@ const CarDetails = () => {
       </button>
 
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12'>
-        {/* Left Section */}
+        {/* Left Section (No changes here) */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -202,10 +236,9 @@ const CarDetails = () => {
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.5 }}
             src={car.image}
-            alt=''
+            alt={`${car.brand} ${car.model}`}
             className='w-full h-auto md:max-h-100 object-cover rounded-xl mb-6 shadow-md'
           />
-
           <motion.div
             className='space-y-6'
             initial={{ opacity: 0 }}
@@ -216,9 +249,7 @@ const CarDetails = () => {
               <h1 className='text-3xl font-bold'>{car.brand} {car.model}</h1>
               <p className='text-gray-500 text-lg'>{car.category} • {car.year}</p>
             </div>
-
             <hr className='border-borderColor my-6' />
-
             <div className='grid grid-cols-2 sm:grid-cols-4 gap-4'>
               {[
                 { icon: assets.users_icon, text: `${car.seating_capacity} Seats` },
@@ -235,12 +266,10 @@ const CarDetails = () => {
                 </motion.div>
               ))}
             </div>
-
             <div>
               <h1 className='text-xl font-medium mb-3'>Description</h1>
               <p className='text-gray-500'>{car.description}</p>
             </div>
-
             <div>
               <h1 className='text-xl font-medium mb-3'>Features</h1>
               <ul className='grid grid-cols-1 sm:grid-cols-2 gap-2'>
@@ -255,20 +284,23 @@ const CarDetails = () => {
           </motion.div>
         </motion.div>
 
-        {/* Right Section (Booking) */}
+        {/* --- RIGHT SECTION (BOOKING) --- UI UPDATED FOR DYNAMIC PRICING --- */}
         <motion.form
           onSubmit={handleSubmit}
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.6 }}
-          className='shadow-lg h-max sticky top-18 rounded-xl p-6 space-y-6 text-gray-500'
+          className='shadow-lg h-max sticky top-24 rounded-xl p-6 space-y-4 text-gray-500'
         >
-          <p className='flex items-center justify-between text-2xl text-gray-800 font-semibold'>
-            {currency}{car.pricePerDay}
-            <span className='text-base text-gray-400 font-normal'>per day</span>
+          <p className='flex items-baseline justify-between text-2xl text-gray-800 font-semibold'>
+            <span>
+              {currency}{car.pricePerDay}
+              <span className='text-base text-gray-400 font-normal'>/day</span>
+            </span>
+            <span className='text-sm font-normal text-gray-400'>Base Rate</span>
           </p>
 
-          <hr className='border-borderColor my-6' />
+          <hr className='border-borderColor' />
 
           <div className='flex flex-col gap-2'>
             <label htmlFor='pickup-date'>Pickup Date</label>
@@ -292,24 +324,58 @@ const CarDetails = () => {
               className='border border-borderColor px-3 py-2 rounded-lg'
               required
               id='return-date'
+              min={getMinReturnDate()}
             />
           </div>
 
-          <button className='w-full bg-primary hover:bg-primary-dull transition-all py-3 font-medium text-white rounded-xl cursor-pointer'>
-            {loading ? "Processing..." : "Book Now"}
-          </button>
+          {/* Dynamic Price Breakdown Section */}
+          {pricingDetails && pricingDetails.totalAmount > 0 && (
+            <div className='space-y-2 border-t border-b border-borderColor py-4 my-2 text-sm'>
+              <h3 className='text-base font-medium text-gray-700 mb-2'>Price Breakdown</h3>
+              <div className='flex justify-between'>
+                <p>{currency}{car.pricePerDay} x {pricingDetails.noOfDays} day{pricingDetails.noOfDays > 1 ? 's' : ''}</p>
+                <p>{currency}{pricingDetails.baseAmount.toFixed(2)}</p>
+              </div>
 
-          {pickupDate && returnDate && noOfDays > 0 && (
-            <div className='text-center text-sm text-gray-500'>
-              <p>{noOfDays} day{noOfDays > 1 ? 's' : ''} • Total: {currency}{(car?.pricePerDay * noOfDays) || 0}</p>
+              {pricingDetails.urgentBookingFee > 0 && (
+                <div className='flex justify-between text-orange-600'>
+                  <p>Urgent Booking Fee (15%)</p>
+                  <p>+ {currency}{pricingDetails.urgentBookingFee.toFixed(2)}</p>
+                </div>
+              )}
+              {pricingDetails.weekendSurcharge > 0 && (
+                <div className='flex justify-between text-orange-600'>
+                  <p>Weekend Surcharge (10%)</p>
+                  <p>+ {currency}{pricingDetails.weekendSurcharge.toFixed(2)}</p>
+                </div>
+              )}
+              {pricingDetails.longTermDiscount > 0 && (
+                <div className='flex justify-between text-green-600'>
+                  <p>Long-Term Discount</p>
+                  <p>- {currency}{pricingDetails.longTermDiscount.toFixed(2)}</p>
+                </div>
+              )}
+
+              <div className='flex justify-between font-bold text-gray-800 text-base pt-2 border-t border-dashed'>
+                <p>Total Amount</p>
+                <p>{currency}{pricingDetails.totalAmount.toFixed(2)}</p>
+              </div>
             </div>
           )}
 
-          <p className='text-center text-sm'>No credit card required to reserve</p>
+          <button
+            type="submit"
+            disabled={loading || !pricingDetails || pricingDetails.totalAmount <= 0}
+            className='w-full bg-primary hover:bg-primary-dull transition-all py-3 font-medium text-white rounded-xl cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed'
+          >
+            {loading ? "Processing..." : "Reserve Now"}
+          </button>
+
+          <p className='text-center text-sm'>You won't be charged until you confirm on the next screen.</p>
         </motion.form>
       </div>
     </div>
   ) : <Loader />
 }
 
-export default CarDetails
+export default CarDetails;
