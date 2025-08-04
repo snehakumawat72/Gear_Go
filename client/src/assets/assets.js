@@ -5,6 +5,7 @@ import instagram_logo from "./instagram_logo.svg";
 import twitter_logo from "./twitter_logo.svg";
 import menu_icon from "./menu_icon.svg";
 import search_icon from "./search_icon.svg"
+import search_white from "./search_white.svg"
 import close_icon from "./close_icon.svg"
 import users_icon from "./users_icon.svg"
 import car_icon from "./car_icon.svg"
@@ -59,6 +60,7 @@ export const assets = {
     twitter_logo,
     menu_icon,
     search_icon,
+    search_white,
     close_icon,
     users_icon,
     edit_icon,
@@ -108,7 +110,6 @@ export const menuLinks = [
   { name: "Cars", path: "/cars" },
   { name: "Trip Gears", path: "/trip-gears" },
   { name: "My Bookings", path: "/my-bookings" },
-  { name: "Contact", path: "/contact" },
 ];
 
 export const ownerMenuLinks = [

@@ -82,7 +82,6 @@ const CarDetails = () => {
     }
 
     const totalAmount = baseAmount + urgentBookingFee + weekendSurcharge - longTermDiscount;
-
     setPricingDetails({
       noOfDays,
       baseAmount,
@@ -99,7 +98,6 @@ const CarDetails = () => {
 
     if (loading) return;
 
-    // Use the calculated total amount from our dynamic pricing state
     const totalAmount = pricingDetails?.totalAmount;
 
     // Validation
@@ -113,7 +111,7 @@ const CarDetails = () => {
       return;
     }
 
-    // if car is available or not
+    // Check availability
     const checkingAvailability = await axios.post('/api/bookings/check-availability', {
       car: id,
       pickupDate,
@@ -128,16 +126,41 @@ const CarDetails = () => {
     setLoading(true);
 
     try {
+      // Step 1: Create Razorpay order
       const { data: orderData } = await axios.post("/api/payment/create-order", {
         amount: totalAmount,
       });
 
       if (!orderData.success) {
-        toast.error("Failed to create Razorpay order");
+        toast.error("Failed to create payment order");
         setLoading(false);
         return;
       }
 
+      // Step 2: Create pending booking
+      const { data: pendingBookingData } = await axios.post("/api/bookings/create-pending", {
+        car: id,
+        pickupDate,
+        returnDate,
+        totalAmount,
+        customerDetails: {
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+        },
+        orderId: orderData.order.id,
+      });
+
+      if (!pendingBookingData.success) {
+        toast.error("Failed to create booking reservation");
+        setLoading(false);
+        return;
+      }
+
+      const bookingId = pendingBookingData.bookingId;
+      const expiresAt = new Date(pendingBookingData.expiresAt);
+
+      // Step 3: Initialize Razorpay payment
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_TJJgTw6mzJZ1sR",
         amount: orderData.order.amount,
@@ -147,29 +170,25 @@ const CarDetails = () => {
         order_id: orderData.order.id,
         handler: async function (response) {
           try {
-            const { data } = await axios.post("/api/bookings/create", {
-              car: id,
-              pickupDate,
-              returnDate,
-              totalAmount, // Send the final calculated amount
-              customerDetails: {
-                name: user.name,
-                email: user.email,
-                phone: user.phone,
-              },
+            // Step 4: Confirm booking after successful payment
+            const { data } = await axios.post("/api/bookings/confirm", {
+              bookingId,
               paymentId: response.razorpay_payment_id,
               orderId: response.razorpay_order_id,
               signature: response.razorpay_signature,
             });
 
             if (data.success) {
-              toast.success("Booking confirmed!");
+              toast.success("Booking confirmed successfully!");
               navigate("/my-bookings");
             } else {
-              toast.error(data.message);
+              toast.error(data.message || "Failed to confirm booking");
             }
           } catch (err) {
-            toast.error("Booking failed after payment", err);
+            console.error('Confirmation error:', err);
+            toast.error("Booking confirmation failed. Please contact support.");
+          } finally {
+            setLoading(false);
           }
         },
         prefill: {
@@ -182,6 +201,12 @@ const CarDetails = () => {
         },
         modal: {
           ondismiss: function () {
+            const timeLeft = Math.round((expiresAt - new Date()) / (1000 * 60));
+            if (timeLeft > 0) {
+              toast.info(`Payment cancelled. Your booking reservation will expire in ${timeLeft} minutes.`);
+            } else {
+              toast.info("Payment cancelled. Your booking reservation may have expired.");
+            }
             setLoading(false);
           }
         }
@@ -190,7 +215,8 @@ const CarDetails = () => {
       const razorpay = new window.Razorpay(options);
       razorpay.open();
     } catch (error) {
-      toast.error("Something went wrong during payment initiation.", error);
+      console.error('Payment initiation error:', error);
+      toast.error("Something went wrong during payment initiation.");
       setLoading(false);
     }
   };

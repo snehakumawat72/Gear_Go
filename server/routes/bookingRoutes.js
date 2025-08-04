@@ -7,6 +7,8 @@ import {
   createGearBooking,
   getOwnerBookings,
   getUserBookings,
+  createPendingBooking,
+  confirmBooking,
 } from "../controllers/bookingController.js";
 import { protect, admin } from "../middleware/auth.js";
 
@@ -18,5 +20,8 @@ bookingRouter.post('/create-gear', protect, createGearBooking);
 bookingRouter.get('/user', protect, getUserBookings);
 bookingRouter.get('/owner', protect, getOwnerBookings);
 bookingRouter.post('/change-status', protect, changeBookingStatus);
+
+bookingRouter.post('/create-pending', protect, createPendingBooking);
+bookingRouter.post('/confirm', protect, confirmBooking);
 
 export default bookingRouter;

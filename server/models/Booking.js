@@ -12,7 +12,7 @@ const BookingSchema = new mongoose.Schema({
   totalAmount: { type: Number, required: true },
   status: {
     type: String,
-    enum: ['pending', 'confirmed', 'cancelled', 'completed'],
+    enum: ['pending', 'confirmed', 'cancelled', 'completed', 'expired'],
     default: 'pending'
   },
   paymentStatus: {
@@ -31,6 +31,12 @@ const BookingSchema = new mongoose.Schema({
   cancellationReason: { type: String },
   refundAmount: { type: Number, default: 0 },
   
+  // NEW: Expiry management for pending bookings
+  expiresAt: {
+    type: Date,
+    index: { expireAfterSeconds: 0 } // TTL index for automatic cleanup
+  },
+  
   // Legacy fields for backward compatibility
   car: { type: mongoose.Schema.Types.ObjectId, ref: 'Car' },
   gear: { type: mongoose.Schema.Types.ObjectId, ref: 'Gear' },
@@ -42,5 +48,9 @@ const BookingSchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
+
+// Index for efficient queries
+BookingSchema.index({ status: 1, expiresAt: 1 });
+BookingSchema.index({ vehicleId: 1, startDate: 1, endDate: 1 });
 
 export default mongoose.models.Booking || mongoose.model('Booking', BookingSchema);

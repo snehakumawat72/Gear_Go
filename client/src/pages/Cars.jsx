@@ -75,7 +75,10 @@ const Cars = () => {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
-        className='flex flex-col items-center py-20 bg-light max-md:px-4'
+        className='flex flex-col items-center py-20 bg-light max-md:px-4 text-light'
+        // style={{ backgroundImage: `url(${"https://images.pexels.com/photos/120049/pexels-photo-120049.jpeg"})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+        style={{ backgroundImage: `url(${"https://images.pexels.com/photos/57645/pexels-photo-57645.jpeg"})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+
       >
         <Title
           title='Available Cars'

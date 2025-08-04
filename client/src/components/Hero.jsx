@@ -27,9 +27,9 @@ const Hero = () => {
 
       {/* Main Content */}
       <div className="relative z-10 text-white w-full flex flex-col items-center text-center pt-32 md:pt-40 space-y-6 max-w-6xl mx-auto">
-        
+
         {/* Heading in One Line */}
-        <motion.h1 
+        <motion.h1
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.8 }}
@@ -39,7 +39,7 @@ const Hero = () => {
         </motion.h1>
 
         {/* Subheading */}
-        <motion.p 
+        <motion.p
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.4, duration: 0.6 }}
@@ -57,7 +57,7 @@ const Hero = () => {
           className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20 w-full max-w-5xl"
         >
           <div className="flex flex-wrap md:flex-nowrap gap-3 items-end">
-            
+
             {/* Location */}
             <div className="flex flex-col w-full md:flex-1">
               <label className="text-sm font-semibold text-white mb-2">
@@ -110,7 +110,7 @@ const Hero = () => {
               type="submit"
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all duration-300 w-full md:w-auto justify-center"
             >
-              <img src={assets.search_icon} alt="search" className="w-4 h-4" />
+              <img src={assets.search_white} alt="search" className="w-4 h-4" />
               Search
             </button>
           </div>

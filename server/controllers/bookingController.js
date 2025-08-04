@@ -5,58 +5,65 @@ import crypto from 'crypto';
 
 
 // ✅ 1. Check Car Availability
+
+// UPDATE: Enhanced availability check to consider pending bookings
 export const checkAvailabilityOfCar = async (req, res) => {
   try {
-    const { location, pickupDate, returnDate } = req.body;
-    const {car} = req.body;
+    const { car, pickupDate, returnDate } = req.body;
 
-    // checking for a single car before buying
-    if(car) {
-      const carData = await Car.findById(car);
-      // console.log("cardata " , carData);
-      if (!carData) {
-        return res.json({ success: false, message: "Car not found" });
-      }
-      // check if car is available from pickupDate to returnDate
-      const bookings = await Booking.find({
-        vehicleId: carData._id,
-        startDate: { $lte: returnDate },
-        endDate: { $gte: pickupDate },
-        status: { $nin: ["cancelled", "rejected"] }
-      });
-      const isAvailable = bookings.length === 0 && carData.isAvailable;
-      if (!isAvailable) {
-        return res.json({ success: false, message: "Car is not available for the selected dates" });
-      }
-      // If available, return the car data
-      carData.isAvailable = isAvailable;
-      
-      return res.json({ success: true, availableCars: [carData] });
-    }
+    const pickup = new Date(pickupDate);
+    const returnD = new Date(returnDate);
 
-
-    // const cars = await Car.find({ location, isAvailable: true });
-    
-    const cars = await Car.find({ isAvailable: true });
-
-
-    const availableCarsPromises = cars.map(async (car) => {
-      const bookings = await Booking.find({
-        vehicleId: car._id,
-        startDate: { $lte: returnDate },
-        endDate: { $gte: pickupDate },
-      });
-      const isAvailable = bookings.length === 0;
-      return { ...car._doc, isAvailable };
+    // Find overlapping bookings that are confirmed or pending (and not expired)
+    const overlappingBookings = await Booking.find({
+      $or: [
+        { vehicleId: car }, // New format
+        { car: car }        // Legacy format
+      ],
+      $and: [
+        {
+          $or: [
+            { status: 'confirmed' },
+            {
+              status: 'pending',
+              expiresAt: { $gt: new Date() }
+            }
+          ]
+        },
+        {
+          $or: [
+            {
+              // Using new date fields
+              startDate: { $lt: returnD },
+              endDate: { $gt: pickup }
+            },
+            {
+              // Using legacy date fields
+              pickupDate: { $lt: returnD },
+              returnDate: { $gt: pickup }
+            }
+          ]
+        }
+      ]
     });
 
-    let availableCars = await Promise.all(availableCarsPromises);
-    availableCars = availableCars.filter(car => car.isAvailable === true);
+    if (overlappingBookings.length > 0) {
+      return res.json({
+        success: false,
+        message: 'Car is not available for the selected dates'
+      });
+    }
 
-    res.json({ success: true, availableCars });
+    res.json({
+      success: true,
+      message: 'Car is available'
+    });
   } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ success: false, message: error.message });
+    console.error('Error checking availability:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error checking availability'
+    });
   }
 };
 
@@ -258,7 +265,7 @@ export const getOwnerBookings = async (req, res) => {
     );
     res.json({ success: true, bookings: populatedBookings });
   } catch (error) {
-    console.error("owner booking error " ,error.message);
+    console.error("owner booking error ", error.message);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -286,8 +293,8 @@ export const changeBookingStatus = async (req, res) => {
 
     const vehicleId = booking.vehicleId || booking.car || booking.gear;
     const isOwner = ownedCars.some(id => id.toString() === vehicleId?.toString()) ||
-                   ownedGears.some(id => id.toString() === vehicleId?.toString()) ||
-                   booking.owner?.toString() === req.user._id.toString();
+      ownedGears.some(id => id.toString() === vehicleId?.toString()) ||
+      booking.owner?.toString() === req.user._id.toString();
 
     if (!isOwner) {
       return res.json({ success: false, message: "Unauthorized" });
@@ -300,5 +307,114 @@ export const changeBookingStatus = async (req, res) => {
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+
+// NEW: Create pending booking when payment starts
+export const createPendingBooking = async (req, res) => {
+  try {
+    const { car, pickupDate, returnDate, totalAmount, customerDetails, orderId } = req.body;
+
+    // Generate unique booking ID
+    const bookingId = `BK${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
+
+    // Set expiry time (15 minutes from now)
+    const expiryTime = new Date();
+    expiryTime.setMinutes(expiryTime.getMinutes() + 15);
+
+    const pendingBooking = new Booking({
+      bookingId,
+      userId: req.user._id.toString(),
+      vehicleId: car,
+      vehicleModel: 'Car', // You might want to fetch this from car data
+      startDate: new Date(pickupDate),
+      endDate: new Date(returnDate),
+      pickupLocation: 'TBD', // Set based on your requirements
+      dailyRate: totalAmount / Math.ceil((new Date(returnDate) - new Date(pickupDate)) / (1000 * 60 * 60 * 24)),
+      totalAmount,
+      status: 'pending',
+      paymentStatus: 'pending',
+      customerDetails,
+      orderId,
+      expiresAt: expiryTime,
+
+      // Legacy fields for backward compatibility
+      car,
+      user: req.user._id,
+      pickupDate: new Date(pickupDate),
+      returnDate: new Date(returnDate),
+      price: totalAmount
+    });
+
+    await pendingBooking.save();
+
+    res.json({
+      success: true,
+      message: 'Pending booking created',
+      bookingId: pendingBooking._id,
+      expiresAt: expiryTime
+    });
+  } catch (error) {
+    console.error('Error creating pending booking:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to create pending booking'
+    });
+  }
+};
+
+// NEW: Confirm booking after successful payment
+export const confirmBooking = async (req, res) => {
+  try {
+    const { orderId, paymentId, signature, bookingId } = req.body;
+
+    const booking = await Booking.findById(bookingId);
+
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: 'Booking not found'
+      });
+    }
+
+    if (booking.status !== 'pending') {
+      return res.status(400).json({
+        success: false,
+        message: 'Booking is not in pending state'
+      });
+    }
+
+    // Check if booking has expired
+    if (new Date() > booking.expiresAt) {
+      booking.status = 'expired';
+      await booking.save();
+      return res.status(400).json({
+        success: false,
+        message: 'Booking has expired'
+      });
+    }
+
+    // Update booking with payment details and confirm
+    booking.status = 'confirmed';
+    booking.paymentStatus = 'paid';
+    booking.paymentId = paymentId;
+    booking.signature = signature;
+    booking.expiresAt = undefined; // Remove expiry since it's confirmed
+
+    await booking.save();
+
+    res.json({
+      success: true,
+      message: 'Booking confirmed successfully',
+      booking
+    });
+  } catch (error) {
+    console.error('Error confirming booking:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to confirm booking'
+    });
   }
 };

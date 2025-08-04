@@ -35,18 +35,17 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const isTransparent = location.pathname === '/' && !scrolled;
+  const isTransparent = (location.pathname === '/' || location.pathname === '/cars') && !scrolled;
 
   return (
     <motion.div
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        isTransparent
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isTransparent
           ? 'bg-white/5 backdrop-blur-md text-white'
           : 'bg-white text-gray-600 shadow-sm border-b border-borderColor'
-      }`}
+        }`}
     >
       <div className="flex items-center justify-between px-6 md:px-16 lg:px-24 xl:px-32 py-4 relative">
 
@@ -56,37 +55,16 @@ const Navbar = () => {
         </Link>
 
         {/* Navigation Links */}
-       <div
-  className={`max-sm:fixed max-sm:h-screen max-sm:w-full max-sm:top-16 max-sm:border-t border-borderColor right-0 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8 max-sm:p-4 transition-all duration-300 z-50 ${
-    open ? 'max-sm:translate-x-0' : 'max-sm:translate-x-full'
-  }`}
->
+        <div
+          className={`max-sm:fixed max-sm:h-screen max-sm:w-full max-sm:top-16 max-sm:border-t border-borderColor right-0 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8 max-sm:p-4 transition-all duration-300 z-50 ${open ? 'max-sm:translate-x-0' : 'max-sm:translate-x-full'
+            }`}
+        >
 
-         {menuLinks.map((link, index) => (
-  <Link key={index} to={link.path} onClick={() => setOpen(false)}>
-    {link.name}
-  </Link>
-))}
-
-
-          {/* Search bar */}
-         <div className={`hidden lg:flex items-center gap-2 px-3 py-1.5 max-w-56 w-full rounded-full border border-borderColor 
-  ${isTransparent ? 'bg-white/10 backdrop-blur-md text-white placeholder-white' : 'bg-white text-gray-800 placeholder-gray-500'}`}>
-
-  <input
-    type="text"
-    className={`w-full bg-transparent outline-none text-sm 
-    ${isTransparent ? 'text-white placeholder-white' : 'text-gray-800 placeholder-gray-500'}`}
-    placeholder="Search "
-  />
-  <img 
-    src={assets.search_icon} 
-    alt="search" 
-    className={`${isTransparent ? 'invert opacity-90' : 'opacity-70'}`} 
-  />
-</div>
-
-
+          {menuLinks.map((link, index) => (
+            <Link key={index} to={link.path} onClick={() => setOpen(false)}>
+              {link.name}
+            </Link>
+          ))}
 
           {/* Action buttons */}
           <div className="flex max-sm:flex-col items-start sm:items-center gap-6">
