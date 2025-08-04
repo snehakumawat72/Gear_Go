@@ -7,12 +7,12 @@
 }
 
 /* adjust for nav bar */
-/* html {
+html {
   scroll-padding-top: 80px; 
 }
 body {
   padding-top: 80px; 
-} */
+}
 
 @theme {
   --color-primary: #2563EB;

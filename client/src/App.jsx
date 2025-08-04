@@ -10,6 +10,7 @@ import CarDetails from './pages/CarDetails';
 import Cars from './pages/Cars';
 import MyBookings from './pages/MyBookings';
 import Gears from './pages/Gears';
+import ContactUs from './pages/ContactUs';
 
 import Layout from './pages/owner/Layout';
 import Dashboard from './pages/owner/Dashboard';
@@ -22,6 +23,7 @@ import AddGear from './pages/owner/AddGear';
 
 import { Toaster } from 'react-hot-toast';
 import { useAppContext } from './context/AppContext';
+import ScrollToTop from './components/ScrollToTop';
 
 const App = () => {
   const { showLogin } = useAppContext();
@@ -33,6 +35,7 @@ const App = () => {
       <Toaster />
       {showLogin && <Login />}
       {!isOwnerPath && <Navbar />}
+      <ScrollToTop />
 
       <Routes>
         {/* Public Routes */}
@@ -41,6 +44,7 @@ const App = () => {
         <Route path="/cars" element={<Cars />} />
         <Route path="/trip-gears" element={<Gears />} />
         <Route path="/gear-details/:id" element={<GearDetails />} />
+        <Route path="/contact" element={<ContactUs />} />
 
         <Route path="/my-bookings" element={<MyBookings />} />
 
@@ -52,9 +56,9 @@ const App = () => {
           <Route path="manage-gears" element={<ManageGear />} />
 
           <Route path="manage-bookings" element={<ManageBookings />} />
-           <Route path="add-gear" element={<AddGear />} />
+          <Route path="add-gear" element={<AddGear />} />
         </Route>
-        
+
       </Routes>
 
       {!isOwnerPath && <Footer />}
