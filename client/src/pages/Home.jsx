@@ -8,8 +8,8 @@ import Services from '../components/Services'
 
 const Home = () => {
   return (
-    // <div className='mt-[-80px]'>
-    <div>
+    <div className='mt-[-80px]'>
+    {/* <div> */}
       <Hero />
       <Services />
       <FeaturedSection />
