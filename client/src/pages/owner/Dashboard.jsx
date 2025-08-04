@@ -6,7 +6,7 @@ import toast from 'react-hot-toast'
 
 const Dashboard = () => {
 
-  const {axios, isOwner, currency} = useAppContext()
+  const { axios, isOwner, currency } = useAppContext()
 
   const [data, setData] = useState({
     totalCars: 0,
@@ -19,45 +19,45 @@ const Dashboard = () => {
   })
 
   const dashboardCards = [
-    {title: "Total Cars", value: data.totalCars, icon: assets.carIconColored},
-    {title: "Total Gears", value: data.totalGears, icon: assets.gearIconColored},
-    {title: "Total Bookings", value: data.totalBookings, icon: assets.listIconColored},
-    {title: "Pending", value: data.pendingBookings, icon: assets.cautionIconColored},
-    {title: "Confirmed", value: data.completedBookings, icon: assets.listIconColored},
+    { title: "Total Cars", value: data.totalCars, icon: assets.carIconColored },
+    { title: "Total Gears", value: data.totalGears, icon: assets.gear_colored },
+    { title: "Total Bookings", value: data.totalBookings, icon: assets.listIconColored },
+    { title: "Pending", value: data.pendingBookings, icon: assets.cautionIconColored },
+    { title: "Confirmed", value: data.completedBookings, icon: assets.listIconColored },
   ]
 
-  const fetchDashboardData = async ()=>{
+  const fetchDashboardData = async () => {
     try {
-       const { data } = await axios.get('/api/owner/dashboard')
-       if (data.success){
+      const { data } = await axios.get('/api/owner/dashboard')
+      if (data.success) {
         setData(data.dashboardData)
-       }else{
+      } else {
         toast.error(data.message)
-       }
+      }
     } catch (error) {
       toast.error(error.message)
     }
   }
 
-  useEffect(()=>{
-    if(isOwner){
+  useEffect(() => {
+    if (isOwner) {
       fetchDashboardData()
     }
-  },[isOwner])
+  }, [isOwner])
 
   return (
     <div className='px-4 pt-10 md:px-10 flex-1'>
-      <Title title="Admin Dashboard" subTitle="Monitor overall platform performance including total cars, bookings, revenue, and recent activities"/>
+      <Title title="Admin Dashboard" subTitle="Monitor overall platform performance including total cars, bookings, revenue, and recent activities" />
 
       <div className='grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 my-8 max-w-5xl'>
-        {dashboardCards.map((card, index)=>(
+        {dashboardCards.map((card, index) => (
           <div key={index} className='flex gap-2 items-center justify-between p-4 rounded-md border border-borderColor'>
             <div>
               <h1 className='text-xs text-gray-500'>{card.title}</h1>
               <p className='text-lg font-semibold'>{card.value}</p>
             </div>
             <div className='flex items-center justify-center w-10 h-10 rounded-full bg-primary/10'>
-              <img src={card.icon} alt="" className='h-4 w-4'/>
+              <img src={card.icon} alt="" className='h-4 w-4' />
             </div>
           </div>
         ))}

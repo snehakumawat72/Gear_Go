@@ -11,6 +11,7 @@ import Cars from './pages/Cars';
 import MyBookings from './pages/MyBookings';
 import Gears from './pages/Gears';
 import ContactUs from './pages/ContactUs';
+import FAQ from './pages/FAQ';
 
 import Layout from './pages/owner/Layout';
 import Dashboard from './pages/owner/Dashboard';
@@ -45,6 +46,7 @@ const App = () => {
         <Route path="/trip-gears" element={<Gears />} />
         <Route path="/gear-details/:id" element={<GearDetails />} />
         <Route path="/contact" element={<ContactUs />} />
+        <Route path="/faq" element={<FAQ />} />
 
         <Route path="/my-bookings" element={<MyBookings />} />
 
