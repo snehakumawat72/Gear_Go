@@ -67,6 +67,65 @@ export const checkAvailabilityOfCar = async (req, res) => {
   }
 };
 
+// ✅ Get Calendar Availability Data
+export const getCarAvailability = async (req, res) => {
+  try {
+    const { carId } = req.params;
+    const { startDate, endDate } = req.query;
+
+    // Find all bookings for this car within the date range
+    const bookings = await Booking.find({
+      $or: [
+        { vehicleId: carId }, // New format
+        { car: carId }        // Legacy format
+      ],
+      $and: [
+        {
+          $or: [
+            { status: 'confirmed' },
+            {
+              status: 'pending',
+              expiresAt: { $gt: new Date() }
+            }
+          ]
+        },
+        {
+          $or: [
+            {
+              // Using new date fields
+              startDate: { $lte: new Date(endDate) },
+              endDate: { $gte: new Date(startDate) }
+            },
+            {
+              // Using legacy date fields
+              pickupDate: { $lte: new Date(endDate) },
+              returnDate: { $gte: new Date(startDate) }
+            }
+          ]
+        }
+      ]
+    }).select('startDate endDate pickupDate returnDate status');
+
+    // Format booked date ranges
+    const bookedDates = bookings.map(booking => ({
+      startDate: (booking.startDate || booking.pickupDate).toISOString().split('T')[0],
+      endDate: (booking.endDate || booking.returnDate).toISOString().split('T')[0],
+      status: booking.status
+    }));
+
+    res.json({
+      success: true,
+      bookedDates
+    });
+  } catch (error) {
+    console.error('Error getting calendar availability:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error getting calendar availability'
+    });
+  }
+};
+
 
 // ✅ 2. Create Booking (Car or Gear)
 export const createBooking = async (req, res) => {

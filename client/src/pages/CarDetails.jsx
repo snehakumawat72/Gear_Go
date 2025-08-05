@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { assets } from '../assets/assets'
 import Loader from '../components/Loader'
+import AvailabilityCalendar from '../components/AvailabilityCalendar'
 import { useAppContext } from '../context/AppContext'
 import toast from 'react-hot-toast'
 import { motion } from 'framer-motion'
@@ -336,6 +337,36 @@ const CarDetails = () => {
             </span>
             <span className='text-sm font-normal text-gray-400'>Base Rate</span>
           </p>
+
+          <hr className='border-borderColor' />
+
+          {/* Calendar Component */}
+          <div className='mb-6'>
+            <h3 className='text-lg font-medium text-gray-800 mb-4'>Check Availability</h3>
+            <AvailabilityCalendar 
+              carId={id}
+              onDateSelect={(date) => {
+                if (!pickupDate || (pickupDate && returnDate)) {
+                  // Set pickup date first or reset both dates
+                  setPickupDate(date)
+                  setReturnDate('')
+                } else if (pickupDate && !returnDate) {
+                  // Set return date if pickup is already set
+                  const pickup = new Date(pickupDate)
+                  const selected = new Date(date)
+                  if (selected > pickup) {
+                    setReturnDate(date)
+                  } else {
+                    // If selected date is before pickup, swap them
+                    setPickupDate(date)
+                    setReturnDate(pickupDate)
+                  }
+                }
+              }}
+              selectedPickup={pickupDate}
+              selectedReturn={returnDate}
+            />
+          </div>
 
           <hr className='border-borderColor' />
 

@@ -25,6 +25,8 @@ A full-stack web application for car and camping gear rental services, built wit
 - **Email Notifications**: Automated booking confirmations
 - **Search & Filters**: Advanced filtering options
 - **Reviews & Ratings**: Customer feedback system
+- **Availability Calendar**: Visual calendar showing car availability and booked dates
+- **Interactive Date Selection**: Click-to-select dates on calendar for booking
 
 ## 🛠️ Tech Stack
 
