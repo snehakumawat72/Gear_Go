@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from "react-router-dom";
@@ -20,21 +20,27 @@ function AppProvider({ children }) {
   const [returnDate, setReturnDate] = useState('');
   const [cars, setCars] = useState([]);
   const [gears, setGears] = useState([]);
+  const [authLoading, setAuthLoading] = useState(true);
 
   // ✅ Fetch user
-  const fetchUser = async () => {
+  const fetchUser = useCallback(async () => {
     try {
       const { data } = await axios.get('/api/user/data');
       if (data.success) {
         setUser(data.user);
         setIsOwner(data.user.role === 'owner');
       } else {
-        navigate('/');
+        setIsOwner(false);
+        setUser(null);
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || error.message);
+      console.error('Failed to fetch user:', error.response?.data?.message || error.message);
+      setIsOwner(false);
+      setUser(null);
+    } finally {
+      setAuthLoading(false);
     }
-  };
+  }, []);
 
   // ✅ Fetch cars
   const fetchCars = async () => {
@@ -78,6 +84,8 @@ function AppProvider({ children }) {
     if (storedToken) {
       setToken(storedToken);
       axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+    } else {
+      setAuthLoading(false);
     }
     fetchCars();
     fetchGears();
@@ -89,7 +97,7 @@ function AppProvider({ children }) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       fetchUser();
     }
-  }, [token]);
+  }, [token, fetchUser]);
 
   const value = {
     navigate,
@@ -101,6 +109,7 @@ function AppProvider({ children }) {
     setToken,
     isOwner,
     setIsOwner,
+    authLoading,
     fetchUser,
     showLogin,
     setShowLogin,

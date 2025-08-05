@@ -15,7 +15,7 @@ const Home = () => {
       <FeaturedSection />
       <Banner />
       <Testimonial />
-      <Newsletter />
+      {/* <Newsletter /> */}
     </div>
     
   )
