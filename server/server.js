@@ -9,6 +9,7 @@ import bookingRouter from "./routes/bookingRoutes.js";
 import gearRoutes from './routes/gearRoutes.js';
 import webhookRoutes from './routes/webhook.js';
 import paymentRoutes from './routes/paymentRoutes.js';
+import gearBookingRouter from "./routes/gearBookingRoutes.js";
 
 const app = express();
 await connectDB();
@@ -22,7 +23,8 @@ app.get('/', (req, res) => res.send("Server is running"));
 app.use('/api/user', userRouter);
 app.use('/api/owner', ownerRouter);
 app.use('/api/bookings', bookingRouter);
-app.use('/api/gears', gearRoutes); 
+app.use('/api/gear-bookings', gearBookingRouter); // Assuming gear bookings are handled in bookingRouter
+app.use('/api/gears', gearRoutes);
 app.use('/api/webhook', webhookRoutes);
 app.use('/api/payment', paymentRoutes);
 

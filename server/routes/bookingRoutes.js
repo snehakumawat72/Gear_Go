@@ -12,10 +12,12 @@ import {
   getCarAvailability,
 } from "../controllers/bookingController.js";
 import { protect, admin } from "../middleware/auth.js";
+import { checkAvailabilityOfGear } from "../controllers/gearBookingController.js";
 
 const bookingRouter = express.Router();
 
 bookingRouter.post('/check-availability', checkAvailabilityOfCar);
+bookingRouter.get('/check-availability-gear/:gearId', checkAvailabilityOfGear);
 bookingRouter.get('/availability/:carId', getCarAvailability);
 bookingRouter.post('/create', protect, createBooking);
 bookingRouter.post('/create-gear', protect, createGearBooking);

@@ -387,7 +387,7 @@ export const createPendingBooking = async (req, res) => {
       bookingId,
       userId: req.user._id.toString(),
       vehicleId: car,
-      vehicleModel: 'Car', // You might want to fetch this from car data
+      vehicleModel: 'Car', // TODO: You might want to fetch this from car data
       startDate: new Date(pickupDate),
       endDate: new Date(returnDate),
       pickupLocation: 'TBD', // Set based on your requirements

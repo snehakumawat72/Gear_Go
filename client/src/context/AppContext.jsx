@@ -63,7 +63,7 @@ function AppProvider({ children }) {
         setGears([]);
       }
     } catch (error) {
-      console.error('Error fetching gears:', error.message);
+      console.error('Error fetching  gears:', error.message);
       setGears([]);
     }
   };
