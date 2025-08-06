@@ -75,7 +75,11 @@ const Gears = () => {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
-        className='flex flex-col items-center py-20 bg-light max-md:px-4'
+        className='flex flex-col items-center py-20 bg-light max-md:px-4 text-light bg-cover bg-center'
+        style={{
+          backgroundImage: `linear-gradient(rgba(37, 99, 235, 0.8), rgba(37, 99, 235, 0.2)),
+          url('https://images.pexels.com/photos/3076820/pexels-photo-3076820.jpeg')
+           `        }}
       >
         <Title
           title='Available Trip Gears'

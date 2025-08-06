@@ -70,6 +70,7 @@ const Cars = () => {
   }, [input, cars]);
 
   return (
+    // <div className='mt-[-80px]'>
     <div>
       <motion.div
         initial={{ opacity: 0, y: 30 }}

@@ -28,6 +28,8 @@ const MyBookings = () => {
   }, [user])
 
   return (
+    // <div className='mt-[-80px]'>
+
     <div className='flex flex-col items-center justify-center min-h-screen bg-gray-50'>
       <motion.div
         initial={{ opacity: 0, y: 30 }}

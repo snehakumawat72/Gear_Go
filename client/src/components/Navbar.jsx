@@ -35,7 +35,7 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const isTransparent = (location.pathname === '/' || location.pathname === '/cars') && !scrolled;
+  const isTransparent = (location.pathname === '/') && !scrolled;
 
   return (
     <motion.div
