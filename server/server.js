@@ -1,6 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
-dotenv.config(); 
+dotenv.config();
 import cors from "cors";
 import connectDB from "./configs/db.js";
 import userRouter from "./routes/userRoutes.js";
@@ -27,6 +27,11 @@ app.use('/api/gear-bookings', gearBookingRouter); // Assuming gear bookings are 
 app.use('/api/gears', gearRoutes);
 app.use('/api/webhook', webhookRoutes);
 app.use('/api/payment', paymentRoutes);
+
+// test route
+app.get('/api/test', (req, res) => {
+    res.json({ message: "Test route is working!" });
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

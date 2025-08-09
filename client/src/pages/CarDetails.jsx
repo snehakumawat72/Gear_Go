@@ -305,11 +305,11 @@ const CarDetails = () => {
             <DetailSection title="Description">
               <p className='text-gray-600 leading-relaxed'>{car.description}</p>
             </DetailSection>
-
-            <DetailSection title="Features">
-              <ul className='grid grid-cols-2 gap-x-6 gap-y-3'>
-                {/* NOTE: look into it */}
+            {/* NOTE: look into it */}
                 {/* Assumes car.features is an array of strings. Provides a fallback. */}
+
+            {/* <DetailSection title="Features">
+              <ul className='grid grid-cols-2 gap-x-6 gap-y-3'>
                 {(car.features || ["Bluetooth", "GPS", "Heated Seats", "Sunroof", "USB Input"]).map((item) => (
                   <li key={item} className='flex items-center text-gray-600'>
                     <img src={assets.check_icon} className='h-4 w-4 mr-3' alt='check mark' />
@@ -317,7 +317,7 @@ const CarDetails = () => {
                   </li>
                 ))}
               </ul>
-            </DetailSection>
+            </DetailSection> */}
 
           </motion.div>
         </motion.div>

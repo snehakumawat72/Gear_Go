@@ -325,12 +325,12 @@ const Dashboard = () => {
                     <p className='text-4xl font-bold text-emerald-600 mb-2'>
                       {currency}{data.monthlyRevenue}
                     </p>
-                    <div className="flex items-center justify-center text-sm text-emerald-600">
+                    {/* <div className="flex items-center justify-center text-sm text-emerald-600">
                       <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11l5-5m0 0l5 5m-5-5v12" />
                       </svg>
                       <span>+12.5% from last month</span>
-                    </div>
+                    </div> */}
                   </div>
 
                   <div className="mt-6 space-y-3">
@@ -377,9 +377,9 @@ const Dashboard = () => {
               color: "from-purple-500 to-purple-600"
             },
             {
-              title: "View Analytics",
+              title: "Manage Cars",
               description: "Track performance metrics",
-              link: "/owner/analytics",
+              link: "/owner/manage-cars",
               icon: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z",
               color: "from-yellow-500 to-yellow-600"
             }

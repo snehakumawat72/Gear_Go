@@ -191,7 +191,7 @@ const AvailabilityCalendar = ({ carId, onDateSelect, selectedPickup, selectedRet
         >
             <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-gray-800">Availability Calendar</h3>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center">
                     <button
                         onClick={prevMonth}
                         className="p-2 hover:bg-gray-100 rounded-lg transition-colors"

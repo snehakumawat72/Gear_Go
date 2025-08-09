@@ -27,10 +27,6 @@ const FAQ = () => {
           answer: "Simply browse our selection of cars and gear, select your preferred items, choose your rental dates, and complete the booking with secure payment. Our owners will coordinate pickup/delivery details with you directly."
         },
         {
-          question: "Is GearGo available in my area?",
-          answer: "We're constantly expanding our service areas. Check our website or contact us to see if we're available in your location. We currently serve major cities and popular travel destinations."
-        },
-        {
           question: "Do I need to create an account to rent?",
           answer: "Yes, creating an account is required for all rentals. This helps us verify users, maintain booking history, and provide better customer service. Registration is quick and free."
         }
@@ -55,14 +51,6 @@ const FAQ = () => {
         {
           question: "Can I cancel or modify my car rental?",
           answer: "Yes, you can cancel or modify your booking up to 24 hours before the rental period begins. Cancellation policies may vary by owner, so check the specific terms when booking."
-        },
-        {
-          question: "What happens if the car breaks down?",
-          answer: "All rentals include 24/7 roadside assistance. Contact our support team immediately, and we'll arrange for repairs or a replacement vehicle as quickly as possible."
-        },
-        {
-          question: "Are there mileage restrictions?",
-          answer: "Mileage policies vary by vehicle and owner. Some offer unlimited mileage, while others may have daily limits. Check the specific listing for details before booking."
         }
       ]
     },
@@ -85,10 +73,6 @@ const FAQ = () => {
         {
           question: "What if the gear is damaged during my rental?",
           answer: "Minor wear and tear is expected and covered. For significant damage, you may be charged for repairs or replacement. We recommend purchasing our damage protection coverage for peace of mind."
-        },
-        {
-          question: "Can I rent gear for multiple days?",
-          answer: "Yes, our gear rentals are available for flexible periods from single days to several weeks. Longer rentals often come with discounted daily rates."
         }
       ]
     },
@@ -109,16 +93,8 @@ const FAQ = () => {
           answer: "We accept all major credit cards, debit cards, and digital payment methods through our secure Razorpay integration. Payment is processed securely with bank-level encryption."
         },
         {
-          question: "When will I be charged?",
-          answer: "Payment is processed immediately upon booking confirmation. For longer rentals, some owners may offer installment payment options."
-        },
-        {
           question: "Can I get a refund?",
           answer: "Refund policies vary by item and timing. Generally, cancellations made 24+ hours in advance are eligible for full refunds minus processing fees. Check individual listing policies for details."
-        },
-        {
-          question: "Are there any hidden fees?",
-          answer: "No hidden fees! All costs including taxes, service fees, and any additional charges are clearly displayed before you complete your booking."
         }
       ]
     },
@@ -139,42 +115,8 @@ const FAQ = () => {
           answer: "Earnings vary based on location, demand, and asset type. Cars can earn $50-300+ per day, while gear typically earns $10-50+ per day. Our calculator can provide estimates based on your specific items."
         },
         {
-          question: "What protection do I have as an owner?",
-          answer: "All rentals include comprehensive insurance coverage, verified renter profiles, security deposits, and 24/7 support. We also have a robust dispute resolution process."
-        },
-        {
           question: "When do I get paid?",
           answer: "Payments are processed 24 hours after successful rental completion and transferred to your bank account within 2-3 business days."
-        },
-        {
-          question: "Can I set my own prices?",
-          answer: "Yes, you have full control over your pricing. We provide market insights and pricing suggestions to help you optimize your earnings while staying competitive."
-        }
-      ]
-    },
-    {
-      category: "Safety & Support",
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-        </svg>
-      ),
-      questions: [
-        {
-          question: "Is my personal information secure?",
-          answer: "Yes, we use bank-level encryption and follow strict data protection protocols. Your personal and payment information is never shared with third parties without your consent."
-        },
-        {
-          question: "What if I have an emergency during my rental?",
-          answer: "Contact our 24/7 emergency support line immediately. We have dedicated teams to handle emergencies, provide roadside assistance, and arrange alternative solutions quickly."
-        },
-        {
-          question: "How do you verify users?",
-          answer: "All users undergo identity verification including government ID checks, driver's license validation (for car rentals), and background screening. This ensures a safe community for everyone."
-        },
-        {
-          question: "What if I'm not satisfied with my rental?",
-          answer: "Contact our support team immediately. We'll work to resolve issues quickly and fairly. In cases where resolution isn't possible, we may offer credits or refunds as appropriate."
         }
       ]
     }
@@ -218,10 +160,10 @@ const FAQ = () => {
       {/* Hero Section */}
       <div 
         className="relative h-96 bg-cover bg-center bg-no-repeat"
+        // url('https://images.pexels.com/photos/1887995/pexels-photo-1887995.jpeg')
         style={{
-          backgroundImage: `linear-gradient(rgba(37, 99, 235, 0.8), rgba(37, 99, 235, 0.2)),
-          url('https://images.pexels.com/photos/1887995/pexels-photo-1887995.jpeg')
-           `
+          // backgroundImage: `linear-gradient(rgba(37, 99, 235, 0.8), rgba(37, 99, 235, 0.2)),
+          backgroundImage: `url('https://concisemedico.co.uk/wp-content/uploads/2023/07/FAQ-Background.webp')`
         }}
       >
         <div className="absolute inset-0 flex items-center justify-center">
