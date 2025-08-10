@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import { assets, menuLinks } from '../assets/assets';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
@@ -15,6 +15,12 @@ const Navbar = () => {
 
   const changeRole = async () => {
     try {
+      if(!user) {
+        toast.error('You need to be logged in to change your role.');
+        user || navigate('/login');
+        setShowLogin(true);
+        return;
+      }
       const { data } = await axios.post('/api/owner/change-role');
       if (data.success) {
         setIsOwner(true);
