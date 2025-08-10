@@ -14,7 +14,32 @@ import gearBookingRouter from "./routes/gearBookingRoutes.js";
 const app = express();
 await connectDB();
 
-app.use(cors());
+const allowedOrigins = [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "http://gear-go-bucket.s3-website.ap-south-1.amazonaws.com",
+    "https://d1lwi0pg6wjhwu.cloudfront.net",
+    process.env.FRONTEND_URL
+].filter(Boolean);
+
+console.log("Allowed origins:", allowedOrigins);
+
+app.use(cors({
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        } else {
+            console.log("Blocked origin:", origin);
+            return callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 
 app.get('/', (req, res) => res.send("Server is running"));
