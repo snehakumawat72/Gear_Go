@@ -91,7 +91,7 @@ const ContactUs = () => {
 		<div className="min-h-screen">
 			{/* Hero Section with Background Image */}
 			<div
-				className="relative h-96 bg-cover bg-center bg-no-repeat"
+				className="relative h-96 bg-cover bg-center bg-no-repeat px-0 lg:px-12 py-8 bg-gray-50"
 				style={{
 					backgroundImage: `linear-gradient(rgba(37, 99, 235, 0.8), rgba(37, 99, 235, 0.6)), url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')`
 				}}
@@ -119,16 +119,11 @@ const ContactUs = () => {
 			</div>
 
 			{/* Main Content */}
-			<div className="container mx-auto px-6 py-16">
+			<div className="container mx-auto px-6 ">
 				<div className="max-w-7xl mx-auto">
-
-					<p className="text-gray-600">
-						We'd love to hear from you. Send us a message and we'll respond as soon as possible.
-					</p>
 					<div className="flex flex-col lg:flex-row gap-8 mx-auto px-0 lg:px-12">
-
 						<motion.div
-							className="bg-white rounded-2xl shadow-2xl flex p-10 lg:p-10 flex-col lg:flex-row gap-8 w-full justify-evenly"
+							className="bg-white rounded-2xl shadow-2xl flex m-10 lg:m-10 flex-col lg:flex-row gap-8 w-full justify-evenly"
 							initial={{ opacity: 0, x: -50 }}
 							animate={{ opacity: 1, x: 0 }}
 							transition={{ duration: 0.8, delay: 0.4 }}
@@ -157,7 +152,9 @@ const ContactUs = () => {
 
 								<div className="mb-8">
 									<h2 className="text-3xl font-bold text-gray-900 mb-2">Send us a Message</h2>
-									<p className="text-gray-600">We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+									<p className="text-gray-600">
+										We're here to help! Please fill out the form below and we'll get back to you as soon as possible.
+									</p>
 								</div>
 
 								<form onSubmit={handleSubmit} className="space-y-6">
@@ -280,16 +277,16 @@ const ContactUs = () => {
 					</div>
 
 
-					<div className='container mx-auto px-6 pt-16'>
+					<div className='container px-12 mx-12 lg:mx-12'>
 
 						{/* Map Section */}
 						<motion.div
-							className="bg-white rounded-2xl overflow-hidden"
+							className="bg-white rounded-2xl overflow-hidden "
 							initial={{ opacity: 0, x: 50 }}
 							animate={{ opacity: 1, x: 0 }}
 							transition={{ duration: 0.8, delay: 0.5 }}
 						>
-							<div className="p-8 lg:p-10">
+							<div className="pt-8 lg:pt-10">
 								<h2 className="text-3xl font-bold text-gray-900 mb-2">Visit Our Office</h2>
 								{/* <p className="text-gray-600 mb-6">
 									We're located in the heart of the business district. Drop by for a coffee and let's discuss how we can help you.
