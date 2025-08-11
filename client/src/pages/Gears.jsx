@@ -78,7 +78,7 @@ const Gears = () => {
         className='flex flex-col items-center py-20 bg-light max-md:px-4 text-light bg-cover bg-center'
         style={{
           backgroundImage: `linear-gradient(rgba(37, 99, 235, 0.5), rgba(37, 99, 235, 0.2)),
-          url('https://cdn.mos.cms.futurecdn.net/sXcBCzp8ifbXvb38Ee5SaU.jpg')
+          url('https://images.pexels.com/photos/190537/pexels-photo-190537.jpeg')
            `        }}
       >
         <Title

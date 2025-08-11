@@ -8,7 +8,7 @@ import Services from '../components/Services'
 
 const Home = () => {
   return (
-    <div className='mt-[-80px]'>
+    <div className='mt-[-80px] bg-[#f9fbff]'>
     {/* <div> */}
       <Hero />
       <Services />

@@ -8,10 +8,10 @@
 
 /* adjust for nav bar */
 html {
-  scroll-padding-top: 80px; 
+  scroll-padding-top: 75px; 
 }
 body {
-  padding-top: 80px; 
+  padding-top: 75px; 
 }
 
 @theme {
