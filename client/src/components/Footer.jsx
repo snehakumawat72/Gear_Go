@@ -16,7 +16,7 @@ const Footer = () => {
 
           {/* Column 1: Brand & Mission */}
           {/* <div className='col-span-2'></div> */}
-          <div className="col-span-2 sm:col-span-2 md:col-span-2 ">
+          <div className="col-span-2 sm:col-span-2 md:col-span-2 px-16">
             <h3 className="text-2xl font-bold text-white mb-2">GearGo</h3>
             <p className="text-sm text-gray-300">
               Your key to exploring the open road with the perfect vehicle.
@@ -35,6 +35,9 @@ const Footer = () => {
               </SocialIcon>
             </div>
           </div>
+
+          <div className=" grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-8 mt-8 flex justify-between">
+
 
           {/* Column 2: Quick Links */}
           <div>
@@ -56,6 +59,7 @@ const Footer = () => {
               <li><Link to="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
               <li><Link to="/terms" className="hover:text-primary transition-colors">Terms of Service</Link></li>
             </ul>
+          </div>
           </div>
 
           {/* Column 4: Social Media */}

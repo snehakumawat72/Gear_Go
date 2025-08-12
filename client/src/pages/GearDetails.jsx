@@ -333,17 +333,6 @@ const handleSubmit = async (e) => {
               <p className='text-gray-600 leading-relaxed'>{gear.description}</p>
             </DetailSection>
 
-            <DetailSection title="Features">
-              <ul className='grid grid-cols-2 gap-x-6 gap-y-3'>
-                {(gear.features || ["Durable Material", "Weather Resistant", "Easy Assembly", "Compact Design"]).map((item) => (
-                  <li key={item} className='flex items-center text-gray-600'>
-                    <img src={assets.check_icon} className='h-4 w-4 mr-3' alt='check mark' />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </DetailSection>
-
           </motion.div>
         </motion.div>
 

@@ -139,6 +139,7 @@ const Login = () => {
                         className={`border rounded w-full p-2 mt-1 outline-primary ${errors.phone ? 'border-red-500' : 'border-gray-200'}`}
                         type="tel"
                         disabled={loading}
+                        required
                     />
                     {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
                 </div>

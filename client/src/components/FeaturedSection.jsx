@@ -97,7 +97,7 @@ const FeaturedSection = () => {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6, duration: 0.4 }}
         onClick={() => {
-          navigate('/gears');
+          navigate('/trip-gears');
           scrollTo(0, 0);
         }}
         className="flex items-center justify-center gap-2 px-6 py-2 border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition rounded-md mt-10"

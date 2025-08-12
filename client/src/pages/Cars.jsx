@@ -76,10 +76,12 @@ const Cars = () => {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
-        className='flex flex-col items-center py-14 bg-light max-md:px-4 text-light'
-        // style={{ backgroundImage: `url(${"https://images.pexels.com/photos/120049/pexels-photo-120049.jpeg"})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
-        style={{ backgroundImage: `url(${"https://images.pexels.com/photos/57645/pexels-photo-57645.jpeg"})`, backgroundSize: 'cover', backgroundPosition: 'end' }}
-
+        className='flex flex-col items-center py-14  max-md:px-4 text-light bg-cover bg-center'
+        style={{
+          backgroundImage: `
+          linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.1)),
+          url('https://images.pexels.com/photos/45775/pexels-photo-45775.jpeg'),
+        `        }}
       >
         <Title
           title='Available Cars'
@@ -90,17 +92,17 @@ const Cars = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
-          className='flex items-center bg-white px-4 mt-6 max-w-140 w-full h-12 rounded-full shadow'
+          style={{ backgroundColor: 'rgba(255, 255, 255, 0.6)' }}
+          className='flex items-center px-4 mt-6 max-w-140 w-full h-12 rounded-full shadow'
         >
           <img src={assets.search_icon} alt="" className='w-4.5 h-4.5 mr-2' />
           <input
             onChange={(e) => setInput(e.target.value)}
             value={input}
-            type='text'
-            placeholder='Search by make, model, or features'
-            className='w-full h-full outline-none text-gray-500'
+            type="text"
+            placeholder='Search by gear name, category, or features'
+            className='w-full h-full outline-none bg-opacity-50  placeholder:text-gray-600 text-gray-600'
           />
-          <img src={assets.filter_icon} alt="" className='w-4.5 h-4.5 ml-2' />
         </motion.div>
       </motion.div>
 
@@ -114,7 +116,7 @@ const Cars = () => {
           Showing {filteredCars?.length || 0} Cars
         </p>
 
-        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-4 xl:px-20 max-w-7xl mx-auto'>
+        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 my-4 xl:px-20 max-w-7xl mx-auto'>
           {filteredCars?.map((car, index) => (
             <motion.div
               key={index}

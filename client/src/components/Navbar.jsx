@@ -17,7 +17,7 @@ const Navbar = () => {
     try {
       if(!user) {
         toast.error('You need to be logged in to change your role.');
-        user || navigate('/login');
+        // user || navigate('/login');
         setShowLogin(true);
         return;
       }
@@ -78,7 +78,7 @@ const Navbar = () => {
               onClick={() => (isOwner ? navigate('/owner') : changeRole())}
               className="cursor-pointer"
             >
-              {isOwner ? 'Dashboard' : 'List cars'}
+              {isOwner ? 'Dashboard' : 'List cars/gears'}
             </button>
 
             <button

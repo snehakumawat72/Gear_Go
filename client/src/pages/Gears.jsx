@@ -77,9 +77,10 @@ const Gears = () => {
         transition={{ duration: 0.6, ease: 'easeOut' }}
         className='flex flex-col items-center py-20 bg-light max-md:px-4 text-light bg-cover bg-center'
         style={{
-          backgroundImage: `linear-gradient(rgba(37, 99, 235, 0.5), rgba(37, 99, 235, 0.2)),
-          url('https://images.pexels.com/photos/190537/pexels-photo-190537.jpeg')
-           `        }}
+          backgroundImage: `
+          linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.1)),
+          url('https://www.shutterstock.com/image-photo/tent-on-grass-view-mountains-600nw-2471748199.jpg')
+`}}
       >
         <Title
           title='Available Trip Gears'
@@ -90,7 +91,8 @@ const Gears = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
-          className='flex items-center bg-white px-4 mt-6 max-w-140 w-full h-12 rounded-full shadow'
+          style={{ backgroundColor: 'rgba(255, 255, 255, 0.6)' }}
+          className='flex items-center px-4 mt-6 max-w-140 w-full h-12 rounded-full shadow'
         >
           <img src={assets.search_icon} alt="" className='w-4.5 h-4.5 mr-2' />
           <input
@@ -98,9 +100,8 @@ const Gears = () => {
             value={input}
             type="text"
             placeholder='Search by gear name, category, or features'
-            className='w-full h-full outline-none text-gray-500'
+            className='w-full h-full outline-none bg-opacity-50  placeholder:text-gray-600 text-gray-600'
           />
-          <img src={assets.filter_icon} alt="" className='w-4.5 h-4.5 ml-2' />
         </motion.div>
       </motion.div>
 

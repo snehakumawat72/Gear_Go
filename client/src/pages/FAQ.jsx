@@ -11,32 +11,10 @@ const FAQ = () => {
 
   const faqCategories = [
     {
-      category: "General",
+      category: "Cars and Gears",
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      ),
-      questions: [
-        {
-          question: "What is GearGo?",
-          answer: "GearGo is a comprehensive rental platform that allows you to rent cars and outdoor gear for your travel and adventure needs. We connect travelers with vehicle owners and gear providers to make your trips more convenient and affordable."
-        },
-        {
-          question: "How does GearGo work?",
-          answer: "Simply browse our selection of cars and gear, select your preferred items, choose your rental dates, and complete the booking with secure payment. Our owners will coordinate pickup/delivery details with you directly."
-        },
-        {
-          question: "Do I need to create an account to rent?",
-          answer: "Yes, creating an account is required for all rentals. This helps us verify users, maintain booking history, and provide better customer service. Registration is quick and free."
-        }
-      ]
-    },
-    {
-      category: "Gear/car Rentals",
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
         </svg>
       ),
       questions: [
@@ -51,6 +29,14 @@ const FAQ = () => {
         {
           question: "What if the gear/car is damaged during my rental?",
           answer: "Minor wear and tear is expected and covered. For significant damage, you may be charged for repairs or replacement. We recommend purchasing our damage protection coverage for peace of mind."
+        },
+        {
+          question: "How does GearGo work?",
+          answer: "Simply browse our selection of cars and gear, select your preferred items, choose your rental dates, and complete the booking with secure payment. Our owners will coordinate pickup/delivery details with you directly."
+        },
+        {
+          question: "Do I need to create an account to rent?",
+          answer: "Yes, creating an account is required for all rentals. This helps us verify users, maintain booking history, and provide better customer service. Registration is quick and free."
         }
       ]
     },
@@ -145,7 +131,7 @@ const FAQ = () => {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-6 py-16">
+      <div className="container mx-auto px-40 py-16">
         <div className="max-w-6xl mx-auto">
           
           {/* Quick Actions */}
