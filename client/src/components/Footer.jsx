@@ -36,30 +36,28 @@ const Footer = () => {
             </div>
           </div>
 
-          <div className=" grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-8 mt-8 flex justify-between">
+          <div className=" col-span-2 gap-8 flex justify-between pr-16">
+            {/* Column 2: Quick Links */}
+            <div>
+              <h4 className="text-lg font-semibold text-white mb-4">Quick Links</h4>
+              <ul className="space-y-2">
+                <li><Link to="/" className="hover:text-primary transition-colors">Home</Link></li>
+                <li><Link to="/cars" className="hover:text-primary transition-colors">All Cars</Link></li>
+                <li><Link to="/about" className="hover:text-primary transition-colors">About Us</Link></li>
+                <li><Link to="/my-bookings" className="hover:text-primary transition-colors">My Bookings</Link></li>
+              </ul>
+            </div>
 
-
-          {/* Column 2: Quick Links */}
-          <div>
-            <h4 className="text-lg font-semibold text-white mb-4">Quick Links</h4>
-            <ul className="space-y-2">
-              <li><Link to="/" className="hover:text-primary transition-colors">Home</Link></li>
-              <li><Link to="/cars" className="hover:text-primary transition-colors">All Cars</Link></li>
-              <li><Link to="/about" className="hover:text-primary transition-colors">About Us</Link></li>
-              <li><Link to="/my-bookings" className="hover:text-primary transition-colors">My Bookings</Link></li>
-            </ul>
-          </div>
-
-          {/* Column 3: Support */}
-          <div>
-            <h4 className="text-lg font-semibold text-white mb-4">Support</h4>
-            <ul className="space-y-2">
-              <li><Link to="/faq" className="hover:text-primary transition-colors">FAQ</Link></li>
-              <li><Link to="/contact" className="hover:text-primary transition-colors">Contact Us</Link></li>
-              <li><Link to="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
-              <li><Link to="/terms" className="hover:text-primary transition-colors">Terms of Service</Link></li>
-            </ul>
-          </div>
+            {/* Column 3: Support */}
+            <div>
+              <h4 className="text-lg font-semibold text-white mb-4">Support</h4>
+              <ul className="space-y-2">
+                <li><Link to="/faq" className="hover:text-primary transition-colors">FAQ</Link></li>
+                <li><Link to="/contact" className="hover:text-primary transition-colors">Contact Us</Link></li>
+                <li><Link to="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
+                <li><Link to="/terms" className="hover:text-primary transition-colors">Terms of Service</Link></li>
+              </ul>
+            </div>
           </div>
 
           {/* Column 4: Social Media */}

@@ -76,12 +76,12 @@ const Cars = () => {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
-        className='flex flex-col items-center py-14  max-md:px-4 text-light bg-cover bg-center'
+        className='flex flex-col items-center py-20 bg-light max-md:px-4 text-light bg-cover bg-center'
         style={{
           backgroundImage: `
           linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.1)),
-          url('https://images.pexels.com/photos/45775/pexels-photo-45775.jpeg'),
-        `        }}
+          url('https://images.pexels.com/photos/45775/pexels-photo-45775.jpeg')
+`}}
       >
         <Title
           title='Available Cars'
