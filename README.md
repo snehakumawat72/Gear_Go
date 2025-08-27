@@ -1,6 +1,54 @@
+
 # 🚗 Gear Go - Car & Gear Rental Platform
 
-A full-stack web application for car and camping gear rental services, built with React.js frontend and Node.js/Express backend.
+**Gear Go** is a full-stack web application for **car and camping gear rental services**, built with a **React.js frontend** and **Node.js/Express backend**.
+
+🌐 Live App: [Gear Go on CloudFront](https://d1lwi0pg6wjhwu.cloudfront.net/#)<br/><br/>
+<img width="1900" height="856" alt="image" src="https://github.com/user-attachments/assets/138892d9-04fc-41cf-89d8-cecf1ca36ab4" />
+
+
+
+---
+## 🔑 Key Features
+
+### Authentication
+- JWT-based, with secure protected routes and role-based access control
+
+### Payments
+- Razorpay integration with secure transactions and history
+
+### File & Media Management
+- ImageKit and Multer integration for optimized image handling
+
+### Database
+- MongoDB with Mongoose ODM, efficient schema, and indexing for performance
+
+---
+## 🛠️ Tech Stack
+
+### Frontend
+- **React.js** – UI library
+- **Vite** – Build tool & dev server
+- **TailwindCSS** – Utility-first CSS framework
+- **Framer Motion** – Animations
+- **React Router** – Client-side routing
+- **Axios** – HTTP client
+- **React Hot Toast** – Notifications
+
+### Backend
+- **Node.js** – Runtime environment
+- **Express.js** – Web framework
+- **MongoDB** – Database
+- **Mongoose** – ODM for MongoDB
+- **JWT** – Authentication
+- **Bcrypt** – Password hashing
+- **Multer** – File upload handling
+- **Razorpay** – Payment gateway
+- **ImageKit** – Image optimization & CDN
+- **Nodemailer** – Email service
+
+---
+
 
 ## 🌟 Features
 
@@ -10,182 +58,90 @@ A full-stack web application for car and camping gear rental services, built wit
 - **User Authentication**: Secure login and registration
 - **Booking Management**: View and manage your bookings
 - **Payment Integration**: Secure payments via Razorpay
-- **Responsive Design**: Works seamlessly on all devices
+- **Responsive Design**: Works seamlessly across devices
 
 ### For Owners
 - **Owner Dashboard**: Comprehensive management interface
 - **Car Management**: Add, edit, and manage car listings
 - **Gear Management**: Manage camping gear inventory
-- **Booking Management**: Handle rental requests and bookings
-- **Analytics**: Track rental performance and revenue
+- **Booking Management**: Handle rental requests and confirmations
+- **Analytics**: Track rentals and revenue performance
 
 ### General Features
-- **Real-time Updates**: Live booking status updates
-- **Image Management**: Powered by ImageKit for optimized media
+- **Real-Time Updates**: Live booking status updates
+- **Image Management**: Optimized with ImageKit
 - **Email Notifications**: Automated booking confirmations
 - **Search & Filters**: Advanced filtering options
-- **Reviews & Ratings**: Customer feedback system
-- **Availability Calendar**: Visual calendar showing car/gear availability and booked dates
-- **Interactive Date Selection**: Click-to-select dates on calendar for booking
-- **Dynamic Pricing**: Smart pricing with weekend surcharges, urgent booking fees, and long-term discounts
+- **Reviews & Ratings**: User feedback system
+- **Availability Calendar**: Visual calendar showing available and booked dates
+- **Interactive Date Selection**: Click-to-select booking dates
+- **Dynamic Pricing**: Weekend surcharges, urgent booking fees, and discounts
 - **Pending Bookings**: Secure reservation system with payment confirmation
 
-## 🛠️ Tech Stack
+---
 
-### Frontend
-- **React.js** - UI library
-- **Vite** - Build tool and dev server
-- **TailwindCSS** - Utility-first CSS framework
-- **Framer Motion** - Animation library
-- **React Router** - Client-side routing
-- **Axios** - HTTP client
-- **React Hot Toast** - Notifications
-
-### Backend
-- **Node.js** - Runtime environment
-- **Express.js** - Web framework
-- **MongoDB** - Database
-- **Mongoose** - ODM for MongoDB
-- **JWT** - Authentication
-- **Bcrypt** - Password hashing
-- **Multer** - File upload handling
-- **Razorpay** - Payment gateway
-- **ImageKit** - Image optimization and storage
-- **Nodemailer** - Email service
-
-## 📁 Project Structure
-
-```
-Gear_Go/
-├── client/                 # Frontend React application
-│   ├── public/            # Static assets
-│   ├── src/
-│   │   ├── assets/        # Images, icons, and media files
-│   │   ├── components/    # Reusable React components
-│   │   ├── context/       # React context providers
-│   │   ├── hooks/         # Custom React hooks
-│   │   └── pages/         # Page components
-│   ├── package.json       # Frontend dependencies
-│   └── vite.config.js     # Vite configuration
-├── server/                # Backend Node.js application
-│   ├── configs/           # Database and service configurations
-│   ├── controllers/       # Request handlers
-│   ├── middleware/        # Custom middleware
-│   ├── models/           # Database models
-│   ├── routes/           # API routes
-│   ├── utils/            # Utility functions
-│   ├── package.json      # Backend dependencies
-│   └── server.js         # Entry point
-└── README.md             # Project documentation
-```
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 - Node.js (v14 or higher)
-- MongoDB (local or MongoDB Atlas)
+- MongoDB (local or Atlas)
 - npm or yarn package manager
 
 ### Installation
-
 1. **Clone the repository**
-   ```bash
+   ```
    git clone https://github.com/snehakumawat72/Gear_Go.git
    cd Gear_Go
    ```
-
 2. **Install dependencies**
 
-   For the server:
-   ```bash
+   Backend:
+   ```
    cd server
    npm install
    ```
-
-   For the client:
-   ```bash
+   
+   Frontend:
+   ```
    cd ../client
    npm install
    ```
 
-3. **Environment Variables**
 
-   Create a `.env` file in the server directory:
-   ```env
-   PORT=5000
-   MONGODB_URI=your_mongodb_connection_string
-   JWT_SECRET=your_jwt_secret_key
-   RAZORPAY_KEY_ID=your_razorpay_key_id
-   RAZORPAY_KEY_SECRET=your_razorpay_secret
-   IMAGEKIT_PUBLIC_KEY=your_imagekit_public_key
-   IMAGEKIT_PRIVATE_KEY=your_imagekit_private_key
-   IMAGEKIT_URL_ENDPOINT=your_imagekit_url_endpoint
-   EMAIL_USER=your_email_address
-   EMAIL_PASS=your_email_password
-   ```
+   
+3. **Access the application**
 
-4. **Start the Development Servers**
-
-   Start the backend server:
-   ```bash
-   cd server
-   npm run server
-   ```
-
-   Start the frontend development server:
-   ```bash
-   cd client
-   npm run dev
-   ```
-
-   The application will be available at:
    - Frontend: `http://localhost:5173`
    - Backend: `http://localhost:5000`
+
+---
 
 ## 📱 Usage
 
 ### For Customers
-1. **Registration/Login**: Create an account or login with existing credentials
-2. **Browse Rentals**: Explore available cars and gear
-3. **Make Bookings**: Select dates and complete payment
-4. **Manage Bookings**: View booking history and status
+- Register or login
+- Browse cars and gear
+- Select dates and make bookings
+- Manage booking history and status
 
 ### For Owners
-1. **Owner Registration**: Sign up as a rental owner
-2. **Add Listings**: Upload cars and gear with details and images
-3. **Manage Inventory**: Update availability and pricing
-4. **Handle Bookings**: Accept/reject rental requests
+- Register as an owner
+- Add and manage car and gear listings
+- Update inventory and pricing
+- Accept or reject booking requests
 
-## 🔧 Available Scripts
+---
 
-### Frontend (client/)
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
 
-### Backend (server/)
-- `npm run server` - Start development server with nodemon
-- `npm start` - Start production server
+## 🤝 Contribution
 
-## 🔑 Key Features Implementation
+Contributions welcome!  
 
-### Authentication System
-- JWT-based authentication
-- Protected routes for authenticated users
-- Role-based access control (Customer/Owner)
+- Fork the repo  
+- Create a feature branch  
+- Submit a pull request  
 
-### Payment Integration
-- Razorpay payment gateway integration
-- Secure payment processing
-- Payment history tracking
+---
 
-### File Upload & Management
-- ImageKit integration for optimized image storage
-- Multer middleware for file handling
-- Automatic image optimization and CDN delivery
-
-### Database Design
-- MongoDB with Mongoose ODM
-- Efficient schema design for scalability
-- Proper indexing for performance
+**Gear Go** delivers a comprehensive and scalable rental platform with a strong focus on user experience and robust backend services.
